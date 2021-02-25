@@ -4,9 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore;
 using FinTrader.Pro.DB.Data;
 using FinTrader.Pro.DB.Repositories;
+using FinTrader.Pro.Iss;
+using FinTrader.Pro.Bonds.Extensions;
 
 namespace FinTrader.Pro.Web
 {
@@ -27,6 +28,8 @@ namespace FinTrader.Pro.Web
                     opts.UseNpgsql(Configuration["ConnectionStrings:DefaultConnection"]);
                 })
                 .AddScoped<IFinTraderRepository, FinTraderRepository>()
+                .AddIssHttpClient()
+                .AddIssBonds()
                 .AddControllersWithViews();
         }
 

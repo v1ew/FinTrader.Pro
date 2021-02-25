@@ -16,7 +16,7 @@ namespace FinTrader.Pro.Iss
             config = configuration;
         }
 
-        public async Task<TResponseDto> Get<TResponseDto>(string engine, string market, string args)
+        public async Task<TResponseDto> GetAsync<TResponseDto>(string engine, string market, string args)
         {
             // TODO: Check arguments
             string url = $"http://iss.moex.com/iss/engines/{engine}/markets/{market}/securities.json";

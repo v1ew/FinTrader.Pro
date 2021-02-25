@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FinTrader.Pro.DB.Converters;
+using Newtonsoft.Json;
+using System;
 
 namespace FinTrader.Pro.DB.Models
 {
+    [JsonConverter(typeof(JsonBondConverter))]
     public class Bond
     {
         public string SecId { get; set; }

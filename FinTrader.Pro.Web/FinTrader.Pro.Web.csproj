@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FinTrader.Pro.Bonds\FinTrader.Pro.Bonds.csproj" />
     <ProjectReference Include="..\FinTrader.Pro.DB\FinTrader.Pro.DB.csproj" />
+    <ProjectReference Include="..\FinTrader.Pro.Iss\FinTrader.Pro.Iss.csproj" />
   </ItemGroup>
 
 </Project>

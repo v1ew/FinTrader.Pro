@@ -7,6 +7,6 @@ namespace FinTrader.Pro.Iss
 {
     public interface IIssClient
     {
-        Task<TResponseDto> Get<TResponseDto>(string engine, string market, string args);
+        Task<TResponseDto> GetAsync<TResponseDto>(string engine, string market, string args);
     }
 }

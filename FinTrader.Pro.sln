@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinTrader.Pro.Web", "FinTrader.Pro.Web\FinTrader.Pro.Web.csproj", "{705F6719-F1AF-44EB-9C9E-B2E9AAF20DCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinTrader.Pro.Web", "FinTrader.Pro.Web\FinTrader.Pro.Web.csproj", "{705F6719-F1AF-44EB-9C9E-B2E9AAF20DCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinTrader.Pro.DB", "FinTrader.Pro.DB\FinTrader.Pro.DB.csproj", "{07EA9D18-E2A0-426C-9B98-D92467FB340A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinTrader.Pro.DB", "FinTrader.Pro.DB\FinTrader.Pro.DB.csproj", "{07EA9D18-E2A0-426C-9B98-D92467FB340A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinTrader.Pro.Iss", "FinTrader.Pro.Iss\FinTrader.Pro.Iss.csproj", "{24A94726-D0EF-4166-8060-63395C3E9ED6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{07EA9D18-E2A0-426C-9B98-D92467FB340A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07EA9D18-E2A0-426C-9B98-D92467FB340A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07EA9D18-E2A0-426C-9B98-D92467FB340A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24A94726-D0EF-4166-8060-63395C3E9ED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24A94726-D0EF-4166-8060-63395C3E9ED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24A94726-D0EF-4166-8060-63395C3E9ED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24A94726-D0EF-4166-8060-63395C3E9ED6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

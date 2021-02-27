@@ -8,6 +8,7 @@ using FinTrader.Pro.DB.Data;
 using FinTrader.Pro.DB.Repositories;
 using FinTrader.Pro.Iss;
 using FinTrader.Pro.Bonds.Extensions;
+using FinTrader.Pro.Bonds;
 
 namespace FinTrader.Pro.Web
 {
@@ -30,6 +31,7 @@ namespace FinTrader.Pro.Web
                 .AddScoped<IFinTraderRepository, FinTraderRepository>()
                 .AddIssHttpClient()
                 .AddIssBonds()
+                .AddScoped<IBondsService, BondsService>()
                 .AddControllersWithViews();
         }
 

@@ -6,6 +6,6 @@ namespace FinTrader.Pro.Bonds
 {
     public interface IIssBondsRepository
     {
-        Task<IEnumerable<Bond>> LoadAsync();
+        Task<Bond[]> LoadAsync();
     }
 }

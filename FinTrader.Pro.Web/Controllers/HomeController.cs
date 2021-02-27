@@ -6,21 +6,28 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using FinTrader.Pro.DB.Repositories;
+using FinTrader.Pro.Bonds;
 
 namespace FinTrader.Pro.Web.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IFinTraderRepository finTraderRepository;
+        private readonly IBondsService bondsService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IFinTraderRepository repo, IBondsService bondsServ)
         {
             _logger = logger;
+            finTraderRepository = repo;
+            bondsService = bondsServ;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            await bondsService.UpdateStorage();
+            return View(finTraderRepository.Bonds);
         }
 
         public IActionResult Privacy()

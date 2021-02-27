@@ -15,11 +15,11 @@ namespace FinTrader.Pro.Bonds
             issClient = client;
         }
 
-        public async Task<IEnumerable<Bond>> LoadAsync()
+        public async Task<Bond[]> LoadAsync()
         {
-            var bonds = await issClient.GetAsync<Models.Bonds>("stock", "bonds", "iss.only=securities&iss.meta=off&&iss.df=%d-%m-%Y&iss.tf=%H:%M:%S&first=200");
+            var bonds = await issClient.GetAsync<Models.Bonds>("stock", "bonds", "iss.only=securities&iss.meta=off&&iss.df=%d-%m-%Y&iss.tf=%H:%M:%S");
 
-            return bonds.Securities.Data.ToList();
+            return bonds.Securities.Data;
         }
     }
 }

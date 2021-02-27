@@ -15,7 +15,7 @@ namespace FinTrader.Pro.DB.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Bond>().HasKey(b => b.SecId);
+            modelBuilder.Entity<Bond>().HasKey(b => new { b.SecId, b.BoardId });
         }
     }
 }

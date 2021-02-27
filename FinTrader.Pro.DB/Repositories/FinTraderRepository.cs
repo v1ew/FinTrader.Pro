@@ -1,6 +1,7 @@
 ﻿using FinTrader.Pro.DB.Data;
 using FinTrader.Pro.DB.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FinTrader.Pro.DB.Repositories
 {
@@ -14,5 +15,11 @@ namespace FinTrader.Pro.DB.Repositories
         }
 
         public IQueryable<Bond> Bonds => context.Bonds;
+
+        public async Task AddRangeAsync(Bond[] bonds)
+        {
+            await context.Bonds.AddRangeAsync(bonds);
+            await context.SaveChangesAsync(default);
+        }
     }
 }

@@ -30,6 +30,14 @@ namespace FinTrader.Pro.Web.Controllers
             return View(finTraderRepository.Bonds);
         }
 
+        public IActionResult BondsPicker() => View(new BondsPickerViewModel());
+
+        [HttpPost]
+        public IActionResult BondsPicker(BondsPickerViewModel bondsPicker)
+        {
+            return View(bondsPicker);
+        }
+
         public IActionResult Privacy()
         {
             return View();

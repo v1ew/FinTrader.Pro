@@ -1,0 +1,81 @@
+﻿@using System.Linq;
+@model FinTrader.Pro.Web.Models.BondsPickerViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Подбор портфеля из облигаций</h1>
+    @using (Html.BeginForm("BondsPicker", "Home"))
+    {
+        @*Html.EditorForModel()*@
+<div class="text-left">
+    <div class="form-group">
+        <label for="IsFederalAccepted">
+            @Html.CheckBoxFor(m => m.IsFederalAccepted)
+            Государственные облигации (ОФЗ)
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="IsCorporateAccepted">
+            @Html.CheckBoxFor(m => m.IsCorporateAccepted)
+            Облигации компаний
+        </label>
+    </div>
+
+
+    <div class="form-group">
+        <label for="Class">
+            Отобрать облигации:
+            @Html.DropDownListFor(m => m.Class, new SelectList(Enum.GetValues(typeof(BondClass)), "MostLiquid"))
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="RepaymentDate">
+            Дата погашения:
+            @Html.EditorFor(m => m.RepaymentDate)
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="StrictlyUpToDate">
+            @Html.CheckBoxFor(m => m.StrictlyUpToDate)
+            Строго до даты
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="Method">
+            Рассчитать портфель:
+            @Html.DropDownListFor(m => m.Method, new SelectList(Enum.GetValues(typeof(CalculationMethod)), "InvestmentAmount"))
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="WithoutOffer">
+            @Html.CheckBoxFor(m => m.WithoutOffer)
+            Облигации без оферты
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="OneBondByIssuer">
+            @Html.CheckBoxFor(m => m.OneBondByIssuer)
+            Одна облигация от эмитента
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="TwoPortfolios">
+            @Html.CheckBoxFor(m => m.TwoPortfolios)
+            Разделить сумму на два портфеля
+        </label>
+    </div>
+
+</div>
+
+        <button>Submit</button>
+    }
+</div>

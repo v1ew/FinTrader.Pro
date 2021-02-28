@@ -16,4 +16,8 @@
     <ProjectReference Include="..\FinTrader.Pro.Iss\FinTrader.Pro.Iss.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Shared\DisplayTemplates\" />
+  </ItemGroup>
+
 </Project>

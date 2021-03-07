@@ -11,6 +11,7 @@ namespace FinTrader.Pro.Bonds
     {
         private readonly IIssBondsRepository issBondsRepository;
         private readonly IFinTraderRepository traderRepository;
+
         public BondsService(IIssBondsRepository issBondsRepo, IFinTraderRepository traderRepo)
         {
             issBondsRepository = issBondsRepo;
@@ -27,7 +28,7 @@ namespace FinTrader.Pro.Bonds
         {
             if (!traderRepository.Bonds.Any())
             {
-                await traderRepository.AddRangeAsync(await issBondsRepository.LoadAsync());
+                //await traderRepository.AddRangeAsync(await issBondsRepository.LoadAsync());
             }
         }
     }

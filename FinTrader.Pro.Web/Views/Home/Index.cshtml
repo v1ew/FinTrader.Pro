@@ -1,4 +1,4 @@
-﻿@model IQueryable<FinTrader.Pro.DB.Models.Bond>;
+﻿@model IEnumerable<Dictionary<string, string>>;
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -21,14 +21,14 @@
         @foreach (var bond in Model)
         {
             <tr>
-                <td>@bond.SecId</td>
-                <td>@bond.ShortName</td>
-                <td>@bond.CouponValue</td>
-                <td>@bond.NextCoupon</td>
-                <td>@bond.BoardName</td>
-                <td>@bond.Status</td>
-                <td>@bond.CouponPeriod</td>
-                <td>@bond.MatDate</td>
+                <td>@bond["SECID"]</td>
+                <td>@bond["SHORTNAME"]</td>
+                <td>@bond["COUPONVALUE"]</td>
+                <td>@bond["NEXTCOUPON"]</td>
+                <td>@bond["BOARDNAME"]</td>
+                <td>@bond["STATUS"]</td>
+                <td>@bond["COUPONPERIOD"]</td>
+                <td>@bond["MATDATE"]</td>
             </tr>
         }
     </table>

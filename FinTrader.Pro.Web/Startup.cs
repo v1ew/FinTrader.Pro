@@ -29,7 +29,7 @@ namespace FinTrader.Pro.Web
                     opts.UseNpgsql(Configuration["ConnectionStrings:DefaultConnection"]);
                 })
                 .AddScoped<IFinTraderRepository, FinTraderRepository>()
-                .AddIssHttpClient()
+                .AddIssHttpClient(Configuration)
                 .AddIssBonds()
                 .AddScoped<IBondsService, BondsService>()
                 .AddControllersWithViews();

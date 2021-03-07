@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -8,26 +10,17 @@ namespace FinTrader.Pro.Iss
     public class IssClient : IIssClient
     {
         private IHttpClientFactory httpClientFactory;
-        private IConfiguration config;
 
-        public IssClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public IssClient(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory;
-            config = configuration;
         }
 
-        public async Task<TResponseDto> GetAsync<TResponseDto>(string engine, string market, string args)
+        public async Task<TResponseDto> GetAsync<TResponseDto>(string url, IDictionary<string, string> args = null)
         {
-            // TODO: Check arguments
-            string url = $"http://iss.moex.com/iss/engines/{engine}/markets/{market}/securities.json";
-            if (!string.IsNullOrEmpty(args))
-            {
-                url += $"?{args}";
-            }
-
             using (var httpClient = httpClientFactory.CreateClient("iss"))
             {
-                var response = await httpClient.GetAsync(url);
+                var response = await httpClient.GetAsync(url + (args != null ? "?" + string.Join("&", args.Select(a => $"{a.Key}={a.Value}")) : ""));
 
                 if (response?.IsSuccessStatusCode == true)
                 {

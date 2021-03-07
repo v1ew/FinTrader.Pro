@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
@@ -8,9 +9,9 @@ namespace FinTrader.Pro.Iss
 {
     public static class IssClientExtensions
     {
-        public static IServiceCollection AddIssHttpClient(this IServiceCollection serviceCollection/*, IConfiguration configuration*/)
+        public static IServiceCollection AddIssHttpClient(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            var issBaseUrl = "https://iss.moex.com/"; //configuration.GetSection("Iss:BaseUrl").Value;
+            var issBaseUrl = configuration.GetSection("Iss:BaseUrl").Value;
             serviceCollection.AddHttpClient("iss", c =>
             {
                 c.BaseAddress = new Uri(issBaseUrl);

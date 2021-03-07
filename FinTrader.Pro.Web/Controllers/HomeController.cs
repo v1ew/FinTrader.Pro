@@ -15,19 +15,22 @@ namespace FinTrader.Pro.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IFinTraderRepository finTraderRepository;
+        private readonly IIssBondsRepository issBondsRepository;
         private readonly IBondsService bondsService;
 
-        public HomeController(ILogger<HomeController> logger, IFinTraderRepository repo, IBondsService bondsServ)
+        public HomeController(ILogger<HomeController> logger, IIssBondsRepository bondsRepo, IFinTraderRepository repo, IBondsService bondsServ)
         {
             _logger = logger;
             finTraderRepository = repo;
+            issBondsRepository = bondsRepo;
             bondsService = bondsServ;
         }
 
         public async Task<IActionResult> Index()
         {
-            await bondsService.UpdateStorage();
-            return View(finTraderRepository.Bonds);
+            //await bondsService.UpdateStorage();
+
+            return View(await issBondsRepository.LoadAsync());
         }
 
         public IActionResult BondsPicker() => View(new BondsPickerViewModel());

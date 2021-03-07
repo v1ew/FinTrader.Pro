@@ -9,5 +9,7 @@ namespace FinTrader.Pro.DB.Repositories
         IQueryable<Bond> Bonds { get; }
 
         Task AddRangeAsync(Bond[] bonds);
+
+        Task ClearCacheAsync();
     }
 }

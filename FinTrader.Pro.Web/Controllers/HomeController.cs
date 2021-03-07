@@ -35,7 +35,14 @@ namespace FinTrader.Pro.Web.Controllers
         [HttpPost]
         public IActionResult BondsPicker(BondsPickerViewModel bondsPicker)
         {
+            var data = bondsPicker;
             return View(bondsPicker);
+        }
+
+        public async Task<IActionResult> ClearCache()
+        {
+            await finTraderRepository.ClearCacheAsync();
+            return Ok("OK");
         }
 
         public IActionResult Privacy()

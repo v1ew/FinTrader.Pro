@@ -17,6 +17,12 @@ namespace FinTrader.Pro.Bonds
             traderRepository = traderRepo;
         }
 
+        public void SelectBonds()
+        {
+
+            var result = traderRepository.Bonds.OrderByDescending(b => b.CouponPercent);
+        }
+
         public async Task UpdateStorage()
         {
             if (!traderRepository.Bonds.Any())

@@ -21,5 +21,11 @@ namespace FinTrader.Pro.DB.Repositories
             await context.Bonds.AddRangeAsync(bonds);
             await context.SaveChangesAsync(default);
         }
+
+        public async Task ClearCacheAsync()
+        {
+            context.Bonds.RemoveRange(Bonds);
+            await context.SaveChangesAsync(default);
+        }
     }
 }

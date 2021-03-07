@@ -54,6 +54,13 @@
     </div>
 
     <div class="form-group">
+        <label for="Amount">
+            Введите сумму:
+            @Html.EditorFor(m => m.Amount)
+        </label>
+    </div>
+
+    <div class="form-group">
         <label for="WithoutOffer">
             @Html.CheckBoxFor(m => m.WithoutOffer)
             Облигации без оферты

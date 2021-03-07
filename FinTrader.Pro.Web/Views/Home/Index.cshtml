@@ -15,7 +15,7 @@
             <th>BoardName</th>
             <th>Status</th>
             <th>CouponPeriod</th>
-            <th>SecName</th>
+            <th>Дата погашения</th>
         </tr>
 
         @foreach (var bond in Model)
@@ -28,7 +28,7 @@
                 <td>@bond.BoardName</td>
                 <td>@bond.Status</td>
                 <td>@bond.CouponPeriod</td>
-                <td>@bond.SecName</td>
+                <td>@bond.MatDate</td>
             </tr>
         }
     </table>

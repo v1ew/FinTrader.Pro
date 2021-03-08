@@ -46,7 +46,6 @@ namespace FinTrader.Pro.DB.Converters
                     FaceUnit = sa[26].Value<string>(),
                     BuyBackPrice = sa[27].Value<double?>(),
                     BuyBackDate = dT(sa[28]),
-                    IsIn = sa[29].Value<string>(),
                     LatName = sa[30].Value<string>(),
                     RegNumber = sa[31].Value<string>(),
                     CurrencyId = sa[32].Value<string>(),
@@ -55,7 +54,6 @@ namespace FinTrader.Pro.DB.Converters
                     SecType = sa[35].Value<string>(),
                     CouponPercent = sa[36].Value<double?>(),
                     OfferDate = dT(sa[37]),
-                    SettleDate = dT(sa[38]),
                     LotValue = sa[39].Value<double?>(),
 
                 } : new Bond();

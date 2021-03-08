@@ -7,5 +7,8 @@ namespace FinTrader.Pro.Iss.Requests
     {
         [JsonProperty("coupons")]
         public IssResponsePayload Coupons { get; set; }
+
+        [JsonProperty("offers")]
+        public IssResponsePayload Offers { get; set; }
     }
 }

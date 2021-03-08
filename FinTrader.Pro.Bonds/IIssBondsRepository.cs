@@ -1,11 +1,12 @@
-﻿using FinTrader.Pro.DB.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FinTrader.Pro.Bonds
 {
     public interface IIssBondsRepository
     {
-        Task<List<Dictionary<string, string>>> LoadAsync();
+        Task<IEnumerable<Dictionary<string, string>>> LoadBondsAsync();
+
+        Task<IEnumerable<Dictionary<string, string>>> LoadCouponsAsync(string secId);
     }
 }

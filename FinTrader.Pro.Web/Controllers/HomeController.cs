@@ -30,7 +30,7 @@ namespace FinTrader.Pro.Web.Controllers
         {
             //await bondsService.UpdateStorage();
 
-            return View(await issBondsRepository.LoadAsync());
+            return View(await issBondsRepository.LoadBondsAsync());
         }
 
         public IActionResult BondsPicker() => View(new BondsPickerViewModel());

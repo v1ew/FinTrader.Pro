@@ -39,6 +39,9 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<double?>("BuyBackPrice")
                         .HasColumnType("double precision");
 
+                    b.Property<int?>("CouponFrequency")
+                        .HasColumnType("integer");
+
                     b.Property<double?>("CouponPercent")
                         .HasColumnType("double precision");
 
@@ -51,7 +54,19 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<string>("CurrencyId")
                         .HasColumnType("text");
 
+                    b.Property<int?>("DaysToRedemption")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("Decimals")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Discarded")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("EarlyRepayment")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("EmitterId")
                         .HasColumnType("integer");
 
                     b.Property<string>("FaceUnit")
@@ -60,11 +75,20 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<double?>("FaceValue")
                         .HasColumnType("double precision");
 
+                    b.Property<double?>("InitialFaceValue")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("InstrId")
                         .HasColumnType("text");
 
-                    b.Property<string>("IsIn")
+                    b.Property<bool?>("IsQualifiedInvestors")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Isin")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("IssueDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<long?>("IssueSize")
                         .HasColumnType("bigint");
@@ -92,6 +116,9 @@ namespace FinTrader.Pro.DB.Migrations
 
                     b.Property<double?>("MinStep")
                         .HasColumnType("double precision");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("NextCoupon")
                         .HasColumnType("timestamp without time zone");
@@ -129,13 +156,13 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<string>("SectorId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("SettleDate")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<string>("ShortName")
                         .HasColumnType("text");
 
                     b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TypeName")
                         .HasColumnType("text");
 
                     b.Property<double?>("YieldAtPrevWaPrice")
@@ -144,6 +171,48 @@ namespace FinTrader.Pro.DB.Migrations
                     b.HasKey("SecId", "BoardId");
 
                     b.ToTable("Bonds");
+                });
+
+            modelBuilder.Entity("FinTrader.Pro.DB.Models.Coupon", b =>
+                {
+                    b.Property<int>("CouponId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime?>("CouponDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("FaceUnit")
+                        .HasColumnType("text");
+
+                    b.Property<double?>("FaceValue")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("InitialFaceValue")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Isin")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RecordDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double?>("Value")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("ValuePrc")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("ValueRub")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("CouponId");
+
+                    b.ToTable("Coupons");
                 });
 #pragma warning restore 612, 618
         }

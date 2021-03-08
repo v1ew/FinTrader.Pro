@@ -12,6 +12,7 @@ namespace FinTrader.Pro.DB.Data
             : base(options) { }
 
         public DbSet<Bond> Bonds { get; set; }
+        public DbSet<Coupon> Coupons { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

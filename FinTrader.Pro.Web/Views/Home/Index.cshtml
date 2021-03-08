@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Dictionary<string, string>>;
+﻿@using FinTrader.Pro.Iss.Columns;
+@model IEnumerable<Dictionary<string, string>>;
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -6,13 +7,14 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
 
+    <p>Total: @Model.Count()</p>
     <table class="table">
         <tr>
             <th>SecId</th>
             <th>ShortName</th>
             <th>CouponValue</th>
             <th>NextCoupon</th>
-            <th>BoardName</th>
+            <th>CpuponPercent</th>
             <th>Status</th>
             <th>CouponPeriod</th>
             <th>Дата погашения</th>
@@ -21,14 +23,14 @@
         @foreach (var bond in Model)
         {
             <tr>
-                <td>@bond["SECID"]</td>
-                <td>@bond["SHORTNAME"]</td>
-                <td>@bond["COUPONVALUE"]</td>
-                <td>@bond["NEXTCOUPON"]</td>
-                <td>@bond["BOARDNAME"]</td>
-                <td>@bond["STATUS"]</td>
-                <td>@bond["COUPONPERIOD"]</td>
-                <td>@bond["MATDATE"]</td>
+                <td>@bond[BondsColumnNames.SecId]</td>
+                <td>@bond[BondsColumnNames.ShortName]</td>
+                <td>@bond[BondsColumnNames.CouponValue]</td>
+                <td>@bond[BondsColumnNames.NextCoupon]</td>
+                <td>@bond[BondsColumnNames.CouponPercent]</td>
+                <td>@bond[BondsColumnNames.Status]</td>
+                <td>@bond[BondsColumnNames.CouponPeriod]</td>
+                <td>@bond[BondsColumnNames.MatDate]</td>
             </tr>
         }
     </table>

@@ -16,9 +16,15 @@ namespace FinTrader.Pro.DB.Repositories
 
         public IQueryable<Bond> Bonds => context.Bonds;
 
-        public async Task AddRangeAsync(Bond[] bonds)
+        public async Task AddBondsRangeAsync(Bond[] bonds)
         {
             await context.Bonds.AddRangeAsync(bonds);
+            await context.SaveChangesAsync(default);
+        }
+
+        public async Task AddCouponsRangeAsync(Coupon[] coupons)
+        {
+            await context.Coupons.AddRangeAsync(coupons);
             await context.SaveChangesAsync(default);
         }
 

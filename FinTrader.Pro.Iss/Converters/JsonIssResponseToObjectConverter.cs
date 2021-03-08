@@ -9,7 +9,7 @@ namespace FinTrader.Pro.Iss.Converters
     /// <summary>
     /// Десериализатор json-а ответа ISS в объект
     /// </summary>
-    class JsonIssResponseToObjectConverter : Newtonsoft.Json.JsonConverter
+    class JsonIssResponseToObjectConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -22,7 +22,7 @@ namespace FinTrader.Pro.Iss.Converters
                 return null;
 
             reader.Read(); // перейти на metadata
-            //var metadataJtoken = JToken.Load(reader);
+            //var metadataJtoken = JToken.Load(reader); // Отключается параметром запроса iss.meta=off
             var columnsJtoken = JToken.Load(reader);
             var dataJtoken = JToken.Load(reader);
 

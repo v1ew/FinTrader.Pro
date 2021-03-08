@@ -28,7 +28,7 @@ namespace FinTrader.Pro.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //await bondsService.UpdateStorage();
+            await bondsService.UpdateStorage();
 
             return View(await issBondsRepository.LoadBondsAsync());
         }

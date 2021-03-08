@@ -76,9 +76,9 @@ namespace FinTrader.Pro.Bonds
 
                     });
                 }
-
-                await traderRepository.AddBondsRangeAsync(newBonds.ToArray());
             }
+
+            await traderRepository.AddBondsRangeAsync(newBonds.ToArray());
 
             if (newBonds.Any())
             {

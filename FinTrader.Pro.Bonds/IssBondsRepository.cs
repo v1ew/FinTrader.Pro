@@ -25,7 +25,7 @@ namespace FinTrader.Pro.Bonds
                 { "iss.meta", "off" },
                 { "iss.df", "%d-%m-%Y" },
                 { "iss.tf", "%H:%M:%S" },
-                { "securities.columns", "SECID,BOARDID,SHORTNAME,FACEUNIT,CURRENCYID,COUPONVALUE,NEXTCOUPON,COUPONPERCENT,LOTSIZE,LOTVALUE,FACEVALUE,MATDATE,COUPONPERIOD,ISSUESIZE,REGNUMBER,OFFERDATE,STATUS,SECTYPE,SECNAME,LATNAME" }
+                { "securities.columns", "SECID,BOARDID,SHORTNAME,ISIN,FACEUNIT,CURRENCYID,COUPONVALUE,NEXTCOUPON,COUPONPERCENT,LOTSIZE,LOTVALUE,FACEVALUE,MATDATE,COUPONPERIOD,ISSUESIZE,REGNUMBER,OFFERDATE,STATUS,SECTYPE,SECNAME,LATNAME" }
             });
 
             var data = bonds.Securities.Data.Where(b => b[BondsColumnNames.FaceUnit] == "SUR" && b[BondsColumnNames.CurrencyId] == "SUR").OrderByDescending(b => b[BondsColumnNames.CouponPercent]);

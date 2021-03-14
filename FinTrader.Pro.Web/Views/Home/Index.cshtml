@@ -1,5 +1,5 @@
 ﻿@using FinTrader.Pro.Iss.Columns;
-@model IEnumerable<Dictionary<string, string>>;
+@model FinTrader.Pro.DB.Models.Bond[];
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -23,14 +23,14 @@
         @foreach (var bond in Model)
         {
             <tr>
-                <td>@bond[BondsColumnNames.SecId]</td>
-                <td>@bond[BondsColumnNames.ShortName]</td>
-                <td>@bond[BondsColumnNames.CouponValue]</td>
-                <td>@bond[BondsColumnNames.NextCoupon]</td>
-                <td>@bond[BondsColumnNames.CouponPercent]</td>
-                <td>@bond[BondsColumnNames.Status]</td>
-                <td>@bond[BondsColumnNames.CouponPeriod]</td>
-                <td>@bond[BondsColumnNames.MatDate]</td>
+                <td>@bond.SecId</td>
+                <td>@bond.ShortName</td>
+                <td>@bond.CouponValue</td>
+                <td>@bond.NextCoupon</td>
+                <td>@bond.CouponPercent</td>
+                <td>@bond.Status</td>
+                <td>@bond.CouponPeriod</td>
+                <td>@bond.MatDate</td>
             </tr>
         }
     </table>

@@ -9,6 +9,7 @@ using FinTrader.Pro.DB.Repositories;
 using FinTrader.Pro.Iss;
 using FinTrader.Pro.Bonds.Extensions;
 using FinTrader.Pro.Bonds;
+using Microsoft.Extensions.Logging;
 
 namespace FinTrader.Pro.Web
 {
@@ -20,6 +21,10 @@ namespace FinTrader.Pro.Web
         }
 
         public IConfiguration Configuration { get; }
+        // Debug sql queries
+        public static readonly ILoggerFactory MyLoggerFactory
+            = LoggerFactory.Create(builder => { builder.AddConsole(); });
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -27,6 +32,8 @@ namespace FinTrader.Pro.Web
             services
                 .AddDbContext<FinTraderDataContext>(opts => {
                     opts.UseNpgsql(Configuration["ConnectionStrings:DefaultConnection"]);
+                    // Debug sql queries
+                    opts.UseLoggerFactory(MyLoggerFactory);
                 })
                 .AddScoped<IFinTraderRepository, FinTraderRepository>()
                 .AddIssHttpClient(Configuration)

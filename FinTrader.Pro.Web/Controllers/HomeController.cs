@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FinTrader.Pro.DB.Repositories;
 using FinTrader.Pro.Bonds;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinTrader.Pro.Web.Controllers
 {
@@ -28,9 +29,8 @@ namespace FinTrader.Pro.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            await bondsService.UpdateStorage();
-
-            return View(await issBondsRepository.LoadBondsAsync());
+            _logger.LogDebug("Logging enabled!!!!");
+            return View(await finTraderRepository.Bonds.Where(b => !b.Discarded).ToArrayAsync());
         }
 
         public IActionResult BondsPicker() => View(new BondsPickerViewModel());
@@ -40,6 +40,20 @@ namespace FinTrader.Pro.Web.Controllers
         {
             var data = bondsPicker;
             return View(bondsPicker);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateStorage()
+        {
+            await bondsService.UpdateStorage();
+            return Ok("Ok!");
+        }
+
+        [HttpGet(Name = "DiscardWrongBonds")]
+        public async Task<IActionResult> DiscardWrongBonds()
+        {
+            await bondsService.DiscardWrongBondsAsync();
+            return Ok("Ok!");
         }
 
         public async Task<IActionResult> ClearCache()

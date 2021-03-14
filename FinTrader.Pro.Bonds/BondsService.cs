@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FinTrader.Pro.Bonds.Extensions;
+using FinTrader.Pro.DB.Models;
 using FinTrader.Pro.DB.Repositories;
 using FinTrader.Pro.Iss.Columns;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace FinTrader.Pro.Bonds
 {
@@ -13,19 +16,25 @@ namespace FinTrader.Pro.Bonds
     {
         private readonly IIssBondsRepository issBondsRepository;
         private readonly IFinTraderRepository traderRepository;
+        private readonly ILogger<BondsService> logger;
 
-        public BondsService(IIssBondsRepository issBondsRepo, IFinTraderRepository traderRepo)
+        public BondsService(IIssBondsRepository issBondsRepo, IFinTraderRepository traderRepo, ILogger<BondsService> logger)
         {
             issBondsRepository = issBondsRepo;
             traderRepository = traderRepo;
+            this.logger = logger;
         }
 
-        public void SelectBonds()
+        public async Task<Bond[]> SelectBondsAsync()
         {
-
             var result = traderRepository.Bonds.OrderByDescending(b => b.CouponPercent);
+            return await result.ToArrayAsync();
         }
 
+        /// <summary>
+        /// Скачивает данные по облигациям и сохраняет в БД
+        /// </summary>
+        /// <returns></returns>
         public async Task UpdateStorage()
         {
             var bonds = await issBondsRepository.LoadBondsAsync();
@@ -68,7 +77,7 @@ namespace FinTrader.Pro.Bonds
                         RegNumber = bond[BondsColumnNames.RegNumber],
                         CurrencyId = bond[BondsColumnNames.CurrencyId],
                         //IssueSizePlaced = bond[BondsColumnNames],
-                        //ListLevel = bond[BondsColumnNames],
+                        Isin = bond[BondsColumnNames.Isin],
                         SecType = bond[BondsColumnNames.SecType],
                         CouponPercent = NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponPercent]),
                         OfferDate = NullableValue.TryDateParse(bond[BondsColumnNames.OfferDate]),
@@ -109,6 +118,24 @@ namespace FinTrader.Pro.Bonds
                     await traderRepository.AddCouponsRangeAsync(newCoupons.ToArray());
                 }
             }
+        }
+
+        public async Task DiscardWrongBondsAsync()
+        {
+            Recorder.Start();
+            var wrongIsins = (from c in traderRepository.Coupons
+                              where c.InitialFaceValue > c.FaceValue
+                              select c.Isin).Distinct();
+
+            var wrongBonds = await traderRepository.Bonds.Where(b => !b.Discarded && wrongIsins.Contains(b.Isin)).ToListAsync();
+
+            if (wrongBonds.Any())
+            {
+                await wrongBonds.ForEachAsync(async b => b.Discarded = true);
+                await traderRepository.UpdateBondsRangeAsync(wrongBonds);
+            }
+
+            Recorder.Stop(logger);
         }
     }
 }

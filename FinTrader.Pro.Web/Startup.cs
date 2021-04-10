@@ -70,10 +70,17 @@ namespace FinTrader.Pro.Web
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "../ClientApp";
-                spa.UseAngularCliServer("start");
+            app.UseSpa(spa => {
+                string strategy = Configuration.GetValue<string>("DevTools:ConnectionStrategy");
+                if (strategy == "proxy")
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://127.0.0.1:4200");
+                }
+                else if (strategy == "managed")
+                {
+                    spa.Options.SourcePath = "../ClientApp";
+                    spa.UseAngularCliServer("start");
+                }
             });
         }
     }

@@ -1,37 +1,9 @@
-﻿@using FinTrader.Pro.Iss.Columns;
-@model FinTrader.Pro.DB.Models.Bond[];
-@{
-    ViewData["Title"] = "Home Page";
+﻿@section scripts {
+    <script src="runtime.js"></script>
+    <script src="polyfills.js"></script>
+    <script src="styles.js"></script>
+    <script src="vendor.js"></script>
+    <script src="main.js"></script>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-
-    <p>Total: @Model.Count()</p>
-    <table class="table">
-        <tr>
-            <th>SecId</th>
-            <th>ShortName</th>
-            <th>CouponValue</th>
-            <th>NextCoupon</th>
-            <th>CpuponPercent</th>
-            <th>Status</th>
-            <th>CouponPeriod</th>
-            <th>Дата погашения</th>
-        </tr>
-
-        @foreach (var bond in Model)
-        {
-            <tr>
-                <td>@bond.SecId</td>
-                <td>@bond.ShortName</td>
-                <td>@bond.CouponValue</td>
-                <td>@bond.NextCoupon</td>
-                <td>@bond.CouponPercent</td>
-                <td>@bond.Status</td>
-                <td>@bond.CouponPeriod</td>
-                <td>@bond.MatDate</td>
-            </tr>
-        }
-    </table>
-</div>
+<app-root></app-root>

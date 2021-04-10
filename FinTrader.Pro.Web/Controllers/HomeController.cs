@@ -27,10 +27,10 @@ namespace FinTrader.Pro.Web.Controllers
             bondsService = bondsServ;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             _logger.LogDebug("Logging enabled!!!!");
-            return View(await finTraderRepository.Bonds.Where(b => !b.Discarded).ToArrayAsync());
+            return View();
         }
 
         public IActionResult BondsPicker() => View(new BondsPickerViewModel());

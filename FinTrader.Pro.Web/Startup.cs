@@ -10,6 +10,7 @@ using FinTrader.Pro.Iss;
 using FinTrader.Pro.Bonds.Extensions;
 using FinTrader.Pro.Bonds;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 
 namespace FinTrader.Pro.Web
 {
@@ -67,6 +68,12 @@ namespace FinTrader.Pro.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "../ClientApp";
+                spa.UseAngularCliServer("start");
             });
         }
     }

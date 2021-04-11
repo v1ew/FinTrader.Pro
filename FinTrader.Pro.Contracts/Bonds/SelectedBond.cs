@@ -21,7 +21,7 @@ namespace FinTrader.Pro.Contracts.Bonds
         /// <summary>
         /// Купить штук
         /// </summary>
-        public int AmountToBuy { get; set; }
+        public int AmountToBye { get; set; }
 
         /// <summary>
         /// Сумма

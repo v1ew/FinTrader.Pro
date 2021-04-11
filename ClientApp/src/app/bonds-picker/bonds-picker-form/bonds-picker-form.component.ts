@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BondsPickerFilter } from '../../models/bonds-picker-filter.model';
+import { Repository } from '../../models/repository';
 
 interface SelectItem {
   value: string;
@@ -25,7 +27,7 @@ export class BondsPickerFormComponent implements OnInit {
     { value: "MonthlyCoupon", text: "По купону в месяц" },
   ];
 
-  constructor() {
+  constructor(private router: Router, private repo: Repository) {
     this.bondsPicker = new BondsPickerFilter(false, false, "MostLiquid", null, false, "InvestmentAmount", 10000, false, false, false);
   }
 
@@ -33,7 +35,8 @@ export class BondsPickerFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    alert('Thanks!');
+    this.repo.getBondSet(this.bondsPicker);
+    this.router.navigate(["result"]);
   }
 
   onToggleIsIncludedFederal(): void {

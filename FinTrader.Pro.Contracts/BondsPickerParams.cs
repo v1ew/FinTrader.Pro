@@ -1,5 +1,6 @@
 ﻿using FinTrader.Pro.Contracts.Enums;
 using System;
+using Newtonsoft.Json;
 
 namespace FinTrader.Pro.Contracts
 {
@@ -8,11 +9,14 @@ namespace FinTrader.Pro.Contracts
     /// </summary>
     public class BondsPickerParams
     {
-        public bool IsFederalAccepted { get; set; }
+        [JsonProperty(PropertyName = "isIncludedFederal")]
+        public bool IsIncludedFederal { get; set; }
 
-        public bool IsCorporateAccepted { get; set; }
+        [JsonProperty(PropertyName = "isIncludedCorporate")]
+        public bool IsIncludedCorporate { get; set; }
 
-        public BondClass Class { get; set; }
+        [JsonProperty(PropertyName = "bondsClass")]
+        public BondClass BondsClass { get; set; }
 
         public DateTime? RepaymentDate { get; set; }
 

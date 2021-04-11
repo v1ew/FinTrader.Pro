@@ -31,13 +31,24 @@ namespace FinTrader.Pro.Bonds
 
         public async Task<BondSet> SelectBondsAsync(BondsPickerParams filter)
         {
-            var bonds = traderRepository.Bonds.OrderByDescending(b => b.CouponPercent).Take(BONDS_NUM);
+            int bonds_num = BONDS_NUM;
+            if (filter.IsIncludedCorporate)
+            {
+                bonds_num -= 1;
+                logger.LogDebug("bonds_num is 5!!!");
+            }
+
+            if (filter.RepaymentDate.HasValue)
+            {
+                logger.LogDebug($"Date selected: {filter.RepaymentDate.Value : d}");
+            }
+            var bonds = traderRepository.Bonds.OrderByDescending(b => b.CouponPercent).Take(bonds_num);
             var selectedBonds = await bonds.Select(b => new SelectedBond
             {
                 ShortName = b.ShortName,
                 MatDate = b.MatDate.Value,
                 CouponValue = b.CouponValue.Value,
-                AmountToBuy = 10,
+                AmountToBye = 10,
                 Sum = b.FaceValue.Value * 10
             }).ToArrayAsync();
 
@@ -147,7 +158,7 @@ namespace FinTrader.Pro.Bonds
 
             if (wrongBonds.Any())
             {
-                await wrongBonds.ForEachAsync(async b => b.Discarded = true);
+                wrongBonds.ForEach(b => b.Discarded = true);
                 await traderRepository.UpdateBondsRangeAsync(wrongBonds);
             }
 

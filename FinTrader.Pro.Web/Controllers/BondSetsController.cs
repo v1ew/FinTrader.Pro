@@ -27,11 +27,11 @@ namespace FinTrader.Pro.Web.Controllers
             this.bondsService = bondsService;
         }
 
-        [HttpGet("select")]
-        public async Task<BondSet> GetBondSet(/*[FromBody] BondsPickerParams picker*/)
+        [HttpPost]
+        public async Task<BondSet> GetBondSet([FromBody] BondsPickerParams picker)
         {
-            logger.LogDebug("GetBondSet call test");
-            return await bondsService.SelectBondsAsync(/*picker*/ new BondsPickerParams());
+            logger.LogDebug($"GetBondSet call test: {picker.IsIncludedCorporate}");
+            return await bondsService.SelectBondsAsync(picker);
         }
     }
 }

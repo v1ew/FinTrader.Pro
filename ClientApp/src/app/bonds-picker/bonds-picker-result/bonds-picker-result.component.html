@@ -1,0 +1,31 @@
+<p>bonds-picker-result.component works</p>
+<mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <!-- Position Column -->
+  <ng-container matColumnDef="shortName">
+    <mat-header-cell *matHeaderCellDef> Short Name </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.shortName}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="matDate">
+    <mat-header-cell *matHeaderCellDef> Mat Date </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.matDate}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="couponValue">
+    <mat-header-cell *matHeaderCellDef> Coupon Value </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.couponValue}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="amountToBye">
+    <mat-header-cell *matHeaderCellDef> Amount To Bye </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.amountToBye}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="sum">
+    <mat-header-cell *matHeaderCellDef> Sum </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{element.sum}} </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>

@@ -11,6 +11,8 @@ using FinTrader.Pro.Bonds.Extensions;
 using FinTrader.Pro.Bonds;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace FinTrader.Pro.Web
 {
@@ -40,7 +42,8 @@ namespace FinTrader.Pro.Web
                 .AddIssHttpClient(Configuration)
                 .AddIssBonds()
                 .AddScoped<IBondsService, BondsService>()
-                .AddControllersWithViews();
+                .AddControllersWithViews()
+                .AddNewtonsoftJson(opts => opts.SerializerSettings.Converters.Add(new StringEnumConverter())); ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

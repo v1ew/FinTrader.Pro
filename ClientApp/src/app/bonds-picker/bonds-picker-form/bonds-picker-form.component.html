@@ -1,0 +1,125 @@
+<form #bondsPickerForm="ngForm" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="bonds-picker-card">
+    <mat-card-header>
+      <mat-card-title>Собрать портфель из облигаций</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <h3>Включить в портфель:</h3>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-checkbox labelPosition="after" (change)="onToggleIsIncludedFederal()" name="isIncludedFederal"
+                        [(ngModel)]="bondsPicker.isIncludedFederal">
+            Государственные облигации (ОФЗ)
+          </mat-checkbox>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-checkbox labelPosition="after" name="isIncludedCorporate" [(ngModel)]="bondsPicker.isIncludedCorporate">
+            Облигации компаний
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <h3>Отобрать облигации:</h3>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width" appearance="fill">
+            <mat-select name="bondsClass" [(ngModel)]="bondsPicker.bondsClass">
+              <mat-option *ngFor="let bc of bondClasses" [value]="bc.value">{{bc.text}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="bondsPicker.bondsClass == 'ByRepaymentDate'">
+        <div class="col">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Введите дату</mat-label>
+            <input matInput type="date" name="repaymentDate" [(ngModel)]="bondsPicker.repaymentDate">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row" *ngIf="bondsPicker.bondsClass == 'ByRepaymentDate'">
+        <div class="col">
+          <mat-checkbox labelPosition="after" name="strictlyUpToDate"
+                        [(ngModel)]="bondsPicker.strictlyUpToDate">
+            Строго до даты
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <h3>Рассчитать портфель:</h3>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width" class="full-width" appearance="fill">
+            <mat-select name="calculationMethod" [(ngModel)]="bondsPicker.calculationMethod">
+              <mat-option *ngFor="let cm of calculationMethods" [value]="cm.value">{{cm.text}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Введите сумму</mat-label>
+            <input matInput type="number" name="amount" [(ngModel)]="bondsPicker.amount">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row" style="font-size: 0.5em;">
+        <div class="col">
+          <mat-slider class="full-width" thumbLabel [displayWith]="formatLabel" name="amountSlider" [(ngModel)]="bondsPicker.amount"
+                      step="1000" tickInterval="1000" min="1" max="5000000"></mat-slider>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-checkbox labelPosition="after" name="isWithoutOffer" [(ngModel)]="bondsPicker.isWithoutOffer">
+            Облигации без оферты
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-checkbox [disabled]="bondsPicker.isIncludedFederal" labelPosition="after" name="isOneBondByIssuer" [(ngModel)]="bondsPicker.isOneBondByIssuer">
+            Одна облигация от эмитента
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-checkbox labelPosition="after" name="isTwoPortfolios" [(ngModel)]="bondsPicker.isTwoPortfolios">
+            Разделить сумму на 2 портфеля
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <button mat-raised-button color="primary" type="submit">Рассчитать</button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</form>

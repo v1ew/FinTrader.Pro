@@ -11,7 +11,6 @@ using FinTrader.Pro.Bonds.Extensions;
 using FinTrader.Pro.Bonds;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace FinTrader.Pro.Web
@@ -74,12 +73,14 @@ namespace FinTrader.Pro.Web
             });
 
             app.UseSpa(spa => {
+                //spa.Options.SourcePath = "../src/ClientApp";
+                //spa.UseAngularCliServer("start");
                 string strategy = Configuration.GetValue<string>("DevTools:ConnectionStrategy");
                 if (strategy == "proxy")
                 {
                     spa.UseProxyToSpaDevelopmentServer("http://127.0.0.1:4200");
                 }
-                else if (strategy == "managed")
+                else
                 {
                     spa.Options.SourcePath = "../ClientApp";
                     spa.UseAngularCliServer("start");

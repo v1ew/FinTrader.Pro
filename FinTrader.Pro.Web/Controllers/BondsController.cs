@@ -30,7 +30,14 @@ namespace FinTrader.Pro.Web.Controllers
         [HttpGet("update")]
         public async Task<IActionResult> UpdateStorage()
         {
-            await bondsService.UpdateStorage();
+            await bondsService.UpdateStorageAsync();
+            return Ok("Ok!");
+        }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> FilterStorage()
+        {
+            await bondsService.DiscardWrongBondsAsync();
             return Ok("Ok!");
         }
     }

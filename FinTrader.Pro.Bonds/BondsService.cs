@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FinTrader.Pro.Bonds.Extensions;
 using FinTrader.Pro.Contracts;
 using FinTrader.Pro.Contracts.Bonds;
+using FinTrader.Pro.Contracts.Enums;
 using FinTrader.Pro.DB.Models;
 using FinTrader.Pro.DB.Repositories;
 using FinTrader.Pro.Iss.Columns;
@@ -31,18 +32,41 @@ namespace FinTrader.Pro.Bonds
 
         public async Task<BondSet> SelectBondsAsync(BondsPickerParams filter)
         {
-            int bonds_num = BONDS_NUM;
-            if (filter.IsIncludedCorporate)
+            var bonds = traderRepository.Bonds.Where(b => !b.Discarded);
+            
+            if (filter.IsIncludedCorporate != filter.IsIncludedFederal)
             {
-                bonds_num -= 1;
-                logger.LogDebug("bonds_num is 5!!!");
+                if (filter.IsIncludedCorporate) // выбираем только корпоративные
+                {
+                    bonds = bonds.Where(b => b.SecType != "3");
+                }
+                else // только ОФЗ
+                {
+                    bonds = bonds.Where(b => b.SecType == "3");
+                }
             }
 
-            if (filter.RepaymentDate.HasValue)
+            switch (filter.BondsClass)
             {
-                logger.LogDebug($"Date selected: {filter.RepaymentDate.Value : d}");
+                case BondClass.MostLiquid:
+                    bonds = bonds.OrderByDescending(b => b.CouponPercent);
+                    break;
+                case BondClass.MostProfitable:
+                    bonds = bonds.OrderByDescending(b => b.CouponPercent);
+                    break;
+                case BondClass.ByRepaymentDate:
+                    if (filter.RepaymentDate.HasValue)
+                    {
+                        bonds = bonds.OrderByDescending(b => b.MatDate).Where(b => b.MatDate.Value.CompareTo(filter.RepaymentDate.Value) <= 0);
+                    }
+                    break;
+                case BondClass.FarthestRepaynment:
+                    bonds = bonds.OrderByDescending(b => b.MatDate);
+                    break;
             }
-            var bonds = traderRepository.Bonds.OrderByDescending(b => b.CouponPercent).Take(bonds_num);
+
+
+            bonds = bonds.OrderByDescending(b => b.CouponPercent).Take(BONDS_NUM);
             var selectedBonds = await bonds.Select(b => new SelectedBond
             {
                 ShortName = b.ShortName,
@@ -62,7 +86,7 @@ namespace FinTrader.Pro.Bonds
         /// Скачивает данные по облигациям и сохраняет в БД
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateStorage()
+        public async Task UpdateStorageAsync()
         {
             var bonds = await issBondsRepository.LoadBondsAsync();
             var newBonds = new List<DB.Models.Bond>();
@@ -150,11 +174,17 @@ namespace FinTrader.Pro.Bonds
         public async Task DiscardWrongBondsAsync()
         {
             Recorder.Start();
+            // Убираем все с амортизацией
             var wrongIsins = (from c in traderRepository.Coupons
                               where c.InitialFaceValue > c.FaceValue
                               select c.Isin).Distinct();
 
-            var wrongBonds = await traderRepository.Bonds.Where(b => !b.Discarded && wrongIsins.Contains(b.Isin)).ToListAsync();
+            var wrongBonds = await traderRepository.Bonds
+                .Where(b => !b.Discarded && (wrongIsins.Contains(b.Isin)
+                                             || b.SecType == null
+                                             || (b.SecType != "3" && b.SecType != "6" && b.SecType != "8")  // оставляем только ОФЗ, корп. и биржевые
+                                             || b.CouponPercent == null || b.CouponPercent > 15))
+                .ToListAsync();
 
             if (wrongBonds.Any())
             {

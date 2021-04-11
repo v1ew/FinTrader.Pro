@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FinTrader.Pro.Bonds.Extensions;
+using FinTrader.Pro.Contracts;
+using FinTrader.Pro.Contracts.Bonds;
 using FinTrader.Pro.DB.Models;
 using FinTrader.Pro.DB.Repositories;
 using FinTrader.Pro.Iss.Columns;
@@ -17,6 +19,8 @@ namespace FinTrader.Pro.Bonds
         private readonly IIssBondsRepository issBondsRepository;
         private readonly IFinTraderRepository traderRepository;
         private readonly ILogger<BondsService> logger;
+        // TODO: перенести в параметры
+        private const int BONDS_NUM = 6;
 
         public BondsService(IIssBondsRepository issBondsRepo, IFinTraderRepository traderRepo, ILogger<BondsService> logger)
         {
@@ -25,10 +29,22 @@ namespace FinTrader.Pro.Bonds
             this.logger = logger;
         }
 
-        public async Task<Bond[]> SelectBondsAsync()
+        public async Task<BondSet> SelectBondsAsync(BondsPickerParams filter)
         {
-            var result = traderRepository.Bonds.OrderByDescending(b => b.CouponPercent);
-            return await result.ToArrayAsync();
+            var bonds = traderRepository.Bonds.OrderByDescending(b => b.CouponPercent).Take(BONDS_NUM);
+            var selectedBonds = await bonds.Select(b => new SelectedBond
+            {
+                ShortName = b.ShortName,
+                MatDate = b.MatDate.Value,
+                CouponValue = b.CouponValue.Value,
+                AmountToBuy = 10,
+                Sum = b.FaceValue.Value * 10
+            }).ToArrayAsync();
+
+            return new BondSet
+            {
+                Bonds = selectedBonds
+            };
         }
 
         /// <summary>

@@ -32,6 +32,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ClientApp", "ClientApp\", "
 		SlnRelativePath = "ClientApp\"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinTrader.Pro.Contracts", "FinTrader.Pro.Contracts\FinTrader.Pro.Contracts.csproj", "{8D1B074E-D3D3-4524-8EA7-F6590AA693CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{B92D21EA-CA71-4399-87E3-28DFB39A314A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B92D21EA-CA71-4399-87E3-28DFB39A314A}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{B92D21EA-CA71-4399-87E3-28DFB39A314A}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{8D1B074E-D3D3-4524-8EA7-F6590AA693CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D1B074E-D3D3-4524-8EA7-F6590AA693CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D1B074E-D3D3-4524-8EA7-F6590AA693CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D1B074E-D3D3-4524-8EA7-F6590AA693CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

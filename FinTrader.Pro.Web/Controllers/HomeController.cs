@@ -15,14 +15,14 @@ namespace FinTrader.Pro.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IFinTraderRepository finTraderRepository;
+        //private readonly IFinTraderRepository finTraderRepository;
         private readonly IIssBondsRepository issBondsRepository;
         private readonly IBondsService bondsService;
 
         public HomeController(ILogger<HomeController> logger, IIssBondsRepository bondsRepo, IFinTraderRepository repo, IBondsService bondsServ)
         {
             _logger = logger;
-            finTraderRepository = repo;
+            //finTraderRepository = repo;
             issBondsRepository = bondsRepo;
             bondsService = bondsServ;
         }
@@ -58,7 +58,7 @@ namespace FinTrader.Pro.Web.Controllers
 
         public async Task<IActionResult> ClearCache()
         {
-            await finTraderRepository.ClearCacheAsync();
+            //await finTraderRepository.ClearCacheAsync();
             return Ok("OK");
         }
 

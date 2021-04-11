@@ -38,6 +38,9 @@ namespace FinTrader.Pro.DB.Models
         public double? FaceValue { get; set; }
         public string BoardName { get; set; }
         public string Status { get; set; }
+        /// <summary>
+        /// Дата погашения
+        /// </summary>
         public DateTime? MatDate { get; set; }
         public int? Decimals { get; set; }
         /// <summary>

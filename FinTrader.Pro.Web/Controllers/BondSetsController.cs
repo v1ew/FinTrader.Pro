@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FinTrader.Pro.Bonds;
 using FinTrader.Pro.Contracts;
+using FinTrader.Pro.Contracts.Bonds;
 using FinTrader.Pro.DB.Models;
 using FinTrader.Pro.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,11 @@ namespace FinTrader.Pro.Web.Controllers
         [HttpPost]
         public async Task<BondSet> GetBondSet([FromBody] BondsPickerParams picker)
         {
-            logger.LogDebug($"GetBondSet call test: {picker.IsIncludedCorporate}");
+            if (!(picker.IsIncludedCorporate || picker.IsIncludedFederal))
+            {
+                return new BondSet {Bonds = new SelectedBond[] {}};
+            }
+
             return await bondsService.SelectBondsAsync(picker);
         }
     }

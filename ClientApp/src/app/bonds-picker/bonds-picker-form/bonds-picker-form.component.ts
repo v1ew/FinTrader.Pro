@@ -35,8 +35,19 @@ export class BondsPickerFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.repo.getBondSet(this.bondsPicker);
-    this.router.navigate(["result"]);
+    if (this.validateForm()) {
+      this.repo.getBondSet(this.bondsPicker);
+      this.router.navigate(["result"]);
+    }
+  }
+
+  validateForm(): boolean {
+    if (!(this.bondsPicker.isIncludedCorporate || this.bondsPicker.isIncludedFederal)) {
+      alert("Нужно выбрать хотя бы один тип облигаций - ОФЗ или корпоративные.");
+      return false;
+    }
+
+    return true;
   }
 
   onToggleIsIncludedFederal(): void {

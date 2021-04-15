@@ -5,8 +5,19 @@ using FinTrader.Pro.Contracts.Bonds;
 
 namespace FinTrader.Pro.Contracts
 {
+    /// <summary>
+    /// Подборка облигаций с купонным доходом
+    /// </summary>
     public class BondSet
     {
+        /// <summary>
+        /// Список облигаций
+        /// </summary>
         public SelectedBond[] Bonds { get; set; }
+
+        /// <summary>
+        /// Список всех купонов с датами выплат
+        /// </summary>
+        public SelectedCoupon[] Coupons { get; set; }
     }
 }

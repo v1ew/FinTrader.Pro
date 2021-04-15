@@ -65,7 +65,6 @@ namespace FinTrader.Pro.Bonds
                     break;
             }
 
-
             bonds = bonds.OrderByDescending(b => b.CouponPercent).Take(BONDS_NUM);
             var selectedBonds = await bonds.Select(b => new SelectedBond
             {
@@ -78,8 +77,27 @@ namespace FinTrader.Pro.Bonds
 
             return new BondSet
             {
-                Bonds = selectedBonds
+                Bonds = selectedBonds,
+                Coupons = await GetCouponsAsync(bonds.Select(b => b.Isin).ToArray())
             };
+        }
+
+        /// <summary>
+        /// Получить массив купонов по массиву номеров isin
+        /// </summary>
+        /// <param name="isins"></param>
+        /// <returns></returns>
+        private async Task<SelectedCoupon[]> GetCouponsAsync(string[] isins)
+        {
+            return await traderRepository.Coupons.Where(c => isins.Contains(c.Isin))
+                .Select(c => new SelectedCoupon
+                {
+                    Isin = c.Isin,
+                    Date = c.CouponDate ?? DateTime.MinValue,
+                    Value = c.Value ?? 0
+                })
+                .OrderBy(sc => sc.Date)
+                .ToArrayAsync();
         }
 
         /// <summary>

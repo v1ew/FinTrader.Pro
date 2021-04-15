@@ -17,7 +17,7 @@ namespace FinTrader.Pro.Iss.Converters
 
             var jArray = Newtonsoft.Json.Linq.JArray.Load(reader);
             var r = new T();
-            r.ReadFromJAray(jArray);
+            r.ReadFromJArray(jArray);
 
             return r;
         }

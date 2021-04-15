@@ -11,6 +11,6 @@ namespace FinTrader.Pro.Iss.Converters
         /// Инициализация из JArray, нужна для десереализации из json
         /// </summary>
         /// <param name="array"></param>
-        public abstract void ReadFromJAray(JArray array);
+        public abstract void ReadFromJArray(JArray array);
     }
 }

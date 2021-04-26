@@ -6,20 +6,28 @@ import { BondSet } from './bond-set.model';
 @Injectable()
 export class Repository {
   //filter: BondsPickerFilter;
-  bondSetData: BondSet;
+  private bondSetData: BondSet;
+  private bondsRequested: boolean = false;
 
   constructor(private http: HttpClient) {
     this.bondSetData = {
-      bonds: []
+      bonds: [],
+      coupons: []
     };
+    this.bondsRequested = false;
   }
 
   getBondSet(filter: BondsPickerFilter) {
     this.http.post<BondSet>("/api/bondsets", filter)
       .subscribe(b => this.bondSetData = b);
+    this.bondsRequested = true;
   }
 
   get bondSet(): BondSet {
     return this.bondSetData;
+  }
+
+  get formSent(): boolean {
+    return this.bondsRequested;
   }
 }

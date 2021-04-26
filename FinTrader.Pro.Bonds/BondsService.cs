@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FinTrader.Pro.Bonds.Extensions;
+using FinTrader.Pro.Bonds.Helpers;
 using FinTrader.Pro.Contracts;
 using FinTrader.Pro.Contracts.Bonds;
 using FinTrader.Pro.Contracts.Enums;
@@ -65,36 +66,49 @@ namespace FinTrader.Pro.Bonds
                     break;
             }
 
-            bonds = bonds.OrderByDescending(b => b.CouponPercent).Take(BONDS_NUM);
-            var selectedBonds = await bonds.Select(b => new SelectedBond
+            var bondIds = await bonds//.Distinct(new BondsComparer())//.GroupBy(b => b.SecId).Select(g => g.First())
+                .OrderByDescending(b => b.CouponPercent)
+                .Select(b => b.SecId)
+                .Distinct()
+                .Take(BONDS_NUM).ToArrayAsync();
+            var selectedBonds = bonds
+                .Where(b => bondIds.Contains(b.SecId))
+                .Select(b => new SelectedBond
             {
                 ShortName = b.ShortName,
                 MatDate = b.MatDate.Value,
                 CouponValue = b.CouponValue.Value,
                 AmountToBye = 10,
-                Sum = b.FaceValue.Value * 10
-            }).ToArrayAsync();
+                Sum = b.FaceValue.Value * 10,
+                Isin = b.Isin
+            });
 
             return new BondSet
             {
-                Bonds = selectedBonds,
-                Coupons = await GetCouponsAsync(bonds.Select(b => b.Isin).ToArray())
+                Bonds = await selectedBonds.ToArrayAsync(),
+                Coupons = await GetCouponsAsync(selectedBonds.ToDictionary(b => b.Isin, b => b.ShortName))
             };
         }
 
         /// <summary>
         /// Получить массив купонов по массиву номеров isin
         /// </summary>
-        /// <param name="isins"></param>
+        /// <param name="bonds">Dictionary with key = isin, value = shortName</param>
         /// <returns></returns>
-        private async Task<SelectedCoupon[]> GetCouponsAsync(string[] isins)
+        private async Task<SelectedCoupon[]> GetCouponsAsync(IDictionary<string, string> bonds)
         {
-            return await traderRepository.Coupons.Where(c => isins.Contains(c.Isin))
+            var today = DateTime.Now;
+            return await traderRepository.Coupons
+                .Where(c => bonds.Keys.Contains(c.Isin) 
+                            && c.CouponDate.HasValue 
+                            && c.CouponDate.Value.CompareTo(today) >= 0)
                 .Select(c => new SelectedCoupon
                 {
+                    ShortName = bonds[c.Isin],
                     Isin = c.Isin,
                     Date = c.CouponDate ?? DateTime.MinValue,
-                    Value = c.Value ?? 0
+                    Value = c.Value ?? 0,
+                    Comment = ""
                 })
                 .OrderBy(sc => sc.Date)
                 .ToArrayAsync();
@@ -191,14 +205,26 @@ namespace FinTrader.Pro.Bonds
 
         public async Task DiscardWrongBondsAsync()
         {
+            var badBoardIds = new[]
+            {
+                "TQIR", // Сектор ПИР Московской биржи (ПИР — повышенный инвестиционный риск)
+                "TQRD",
+            };
             Recorder.Start();
             // Убираем все с амортизацией
-            var wrongIsins = (from c in traderRepository.Coupons
-                              where c.InitialFaceValue > c.FaceValue
-                              select c.Isin).Distinct();
+            // var wrongIsins = (from c in traderRepository.Coupons
+            //                   where c.InitialFaceValue > c.FaceValue
+            //                   select c.Isin).Distinct();
+            var wrongIsins = await traderRepository.Coupons
+                .Where(c => c.InitialFaceValue > c.FaceValue)
+                .Select(c => c.Isin).Distinct().ToListAsync();
+            var badIsins = await traderRepository.Bonds
+                .Where(b => badBoardIds.Contains(b.BoardId))
+                .Select(b => b.Isin).Distinct().ToListAsync();
 
             var wrongBonds = await traderRepository.Bonds
                 .Where(b => !b.Discarded && (wrongIsins.Contains(b.Isin)
+                                             || badIsins.Contains(b.Isin)
                                              || b.SecType == null
                                              || (b.SecType != "3" && b.SecType != "6" && b.SecType != "8")  // оставляем только ОФЗ, корп. и биржевые
                                              || b.CouponPercent == null || b.CouponPercent > 15))

@@ -7,6 +7,8 @@ namespace FinTrader.Pro.Bonds
     {
         Task<IEnumerable<Dictionary<string, string>>> LoadBondsAsync();
 
+        Task<IEnumerable<Dictionary<string, string>>> LoadBondsMarketDataAsync();
+
         Task<IEnumerable<Dictionary<string, string>>> LoadCouponsAsync(string secId);
     }
 }

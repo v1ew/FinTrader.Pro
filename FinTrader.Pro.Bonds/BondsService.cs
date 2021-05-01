@@ -131,42 +131,30 @@ namespace FinTrader.Pro.Bonds
                         SecId = bond[BondsColumnNames.SecId],
                         BoardId = bond[BondsColumnNames.BoardId],
                         ShortName = bond[BondsColumnNames.ShortName],
-                        //PrevWaPrice = bond[BondsColumnNames],
-                        //YieldAtPrevWaPrice = bond[BondsColumnNames],
                         CouponValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponValue]),
                         NextCoupon = NullableValue.TryDateParse(bond[BondsColumnNames.NextCoupon]),
-                        //AccruedInt = bond[BondsColumnNames],
-                        //PrevPrice = bond[BondsColumnNames],
                         LotSize = NullableValue.TryIntParse(bond[BondsColumnNames.LotSize]),
                         FaceValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.FaceValue]),
-                        //BoardName = bond[BondsColumnNames],
                         Status = bond[BondsColumnNames.Status],
                         MatDate = NullableValue.TryDateParse(bond[BondsColumnNames.MatDate]),
-                        //Decimals = NullableValue.TryIntParse(bond[BondsColumnNames.Decimals]),
                         CouponPeriod = NullableValue.TryIntParse(bond[BondsColumnNames.CouponPeriod]),
                         IssueSize = NullableValue.TryLongParse(bond[BondsColumnNames.IssueSize]),
-                        //PrevLegalClosePrice = bond[BondsColumnNames],
-                        //PrevAdmittedQuote = bond[BondsColumnNames],
-                        //PrevDate = bond[BondsColumnNames],
                         SecName = bond[BondsColumnNames.SecName],
-                        //Remarks = bond[BondsColumnNames],
-                        //InstrId = bond[BondsColumnNames],
-                        //MarketCode = bond[BondsColumnNames],
-                        //MinStep = bond[BondsColumnNames],
                         FaceUnit = bond[BondsColumnNames.FaceUnit],
-                        //BuyBackPrice = bond[BondsColumnNames],
-                        //BuyBackDate = bond[BondsColumnNames],
                         LatName = bond[BondsColumnNames.LatName],
                         RegNumber = bond[BondsColumnNames.RegNumber],
                         CurrencyId = bond[BondsColumnNames.CurrencyId],
-                        //IssueSizePlaced = bond[BondsColumnNames],
                         Isin = bond[BondsColumnNames.Isin],
                         SecType = bond[BondsColumnNames.SecType],
                         CouponPercent = NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponPercent]),
                         OfferDate = NullableValue.TryDateParse(bond[BondsColumnNames.OfferDate]),
                         LotValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.LotValue]),
-
                     });
+                    //TODO: save log - record created
+                }
+                else
+                {
+                    //TODO: update record, save log
                 }
             }
 

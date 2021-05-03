@@ -1,5 +1,4 @@
-﻿using FinTrader.Pro.DB.Models;
-using FinTrader.Pro.Iss;
+﻿using FinTrader.Pro.Iss;
 using FinTrader.Pro.Iss.Columns;
 using System.Threading.Tasks;
 using System.Linq;
@@ -31,7 +30,7 @@ namespace FinTrader.Pro.Bonds
                 { "iss.df", "%d-%m-%Y" },
                 { "iss.tf", "%H:%M:%S" },
                 { "security_collection", "stock_bonds_all" },
-                { "securities.columns", "SECID,BOARDID,SHORTNAME,ISIN,FACEUNIT,CURRENCYID,COUPONVALUE,NEXTCOUPON,COUPONPERCENT,LOTSIZE,LOTVALUE,FACEVALUE,MATDATE,COUPONPERIOD,ISSUESIZE,REGNUMBER,OFFERDATE,STATUS,SECTYPE,SECNAME,LATNAME" }
+                { "securities.columns", "SECID,BOARDID,SHORTNAME,ISIN,FACEUNIT,CURRENCYID,COUPONVALUE,COUPONPERCENT,ACCRUEDINT,LOTSIZE,LOTVALUE,FACEVALUE,MATDATE,COUPONPERIOD,ISSUESIZE,OFFERDATE,STATUS,SECTYPE,SECNAME" }
             });
 
             // Здесь фильтруем по режиму торгов
@@ -59,12 +58,49 @@ namespace FinTrader.Pro.Bonds
         public async Task<IEnumerable<Dictionary<string, string>>> LoadCouponsAsync(string secId)
         {
             var request = new BondCouponsRequest(issClient);
-            var coupons = await request.FetchAsync(secId, new Dictionary<string, string>
+            var bondization = await request.FetchAsync(secId, new Dictionary<string, string>
             {
-                { "iss.meta", "off" }
+                { "iss.meta", "off" },
+                { "iss.only", "coupons" },
+                { "limit", "200" }
             });
-            // TODO: return offers
-            return coupons.Coupons.Data;
+            return bondization.Coupons.Data;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadAmortizationsAsync(string secId)
+        {
+            var request = new BondCouponsRequest(issClient);
+            var bondization = await request.FetchAsync(secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "iss.only", "amortizations" },
+                { "limit", "200" }
+            });
+            return bondization.Amortizations.Data;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadOffersAsync(string secId)
+        {
+            var request = new BondCouponsRequest(issClient);
+            var bondization = await request.FetchAsync(secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "iss.only", "offers" },
+                { "limit", "200" }
+            });
+            return bondization.Offers.Data;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondsInfoAsync(string secId)
+        {
+            var request = new SecurityDefinitionRequest(issClient);
+            var bondsInfo = await request.FetchAsync(secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "iss.only", "description" }
+            });
+
+            return bondsInfo.Description.Data;
         }
     }
 }

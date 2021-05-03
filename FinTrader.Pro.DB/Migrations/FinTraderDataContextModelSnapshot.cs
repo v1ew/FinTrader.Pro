@@ -24,13 +24,10 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<string>("SecId")
                         .HasColumnType("text");
 
-                    b.Property<string>("BoardId")
-                        .HasColumnType("text");
-
                     b.Property<double?>("AccruedInt")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("BoardName")
+                    b.Property<string>("BoardId")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("BuyBackDate")
@@ -38,9 +35,6 @@ namespace FinTrader.Pro.DB.Migrations
 
                     b.Property<double?>("BuyBackPrice")
                         .HasColumnType("double precision");
-
-                    b.Property<int?>("CouponFrequency")
-                        .HasColumnType("integer");
 
                     b.Property<double?>("CouponPercent")
                         .HasColumnType("double precision");
@@ -54,16 +48,10 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<string>("CurrencyId")
                         .HasColumnType("text");
 
-                    b.Property<int?>("DaysToRedemption")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("Decimals")
                         .HasColumnType("integer");
 
                     b.Property<bool>("Discarded")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("EarlyRepayment")
                         .HasColumnType("boolean");
 
                     b.Property<int?>("EmitterId")
@@ -78,26 +66,17 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<double?>("InitialFaceValue")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("InstrId")
-                        .HasColumnType("text");
-
                     b.Property<bool?>("IsQualifiedInvestors")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Isin")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("IssueDate")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<long?>("IssueSize")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("IssueSizePlaced")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("LatName")
-                        .HasColumnType("text");
 
                     b.Property<int?>("ListLevel")
                         .HasColumnType("integer");
@@ -108,19 +87,7 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<double?>("LotValue")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("MarketCode")
-                        .HasColumnType("text");
-
                     b.Property<DateTime?>("MatDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<double?>("MinStep")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("NextCoupon")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("OfferDate")
@@ -141,19 +108,10 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<double?>("PrevWaPrice")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("RegNumber")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("text");
-
                     b.Property<string>("SecName")
                         .HasColumnType("text");
 
                     b.Property<string>("SecType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SectorId")
                         .HasColumnType("text");
 
                     b.Property<string>("ShortName")
@@ -162,15 +120,128 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("text");
 
-                    b.Property<string>("TypeName")
+                    b.Property<double?>("YieldAtPrevWaPrice")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("SecId");
+
+                    b.HasIndex("Isin");
+
+                    b.ToTable("Bonds");
+                });
+
+            modelBuilder.Entity("FinTrader.Pro.DB.Models.BondChange", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<double?>("AccruedInt")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("BoardId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("BuyBackDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double?>("BuyBackPrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("CouponPercent")
+                        .HasColumnType("double precision");
+
+                    b.Property<int?>("CouponPeriod")
+                        .HasColumnType("integer");
+
+                    b.Property<double?>("CouponValue")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("CurrencyId")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Decimals")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Discarded")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("EmitterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FaceUnit")
+                        .HasColumnType("text");
+
+                    b.Property<double?>("FaceValue")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("InitialFaceValue")
+                        .HasColumnType("double precision");
+
+                    b.Property<bool?>("IsQualifiedInvestors")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Isin")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("IssueSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("IssueSizePlaced")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("ListLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("LotSize")
+                        .HasColumnType("integer");
+
+                    b.Property<double?>("LotValue")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("MatDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("OfferDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double?>("PrevAdmittedQuote")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("PrevDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double?>("PrevLegalClosePrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("PrevPrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("PrevWaPrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("SecId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ShortName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
                         .HasColumnType("text");
 
                     b.Property<double?>("YieldAtPrevWaPrice")
                         .HasColumnType("double precision");
 
-                    b.HasKey("SecId", "BoardId");
+                    b.HasKey("Id");
 
-                    b.ToTable("Bonds");
+                    b.ToTable("BondChanges");
                 });
 
             modelBuilder.Entity("FinTrader.Pro.DB.Models.Coupon", b =>
@@ -211,6 +282,8 @@ namespace FinTrader.Pro.DB.Migrations
                         .HasColumnType("double precision");
 
                     b.HasKey("CouponId");
+
+                    b.HasIndex("Isin");
 
                     b.ToTable("Coupons");
                 });

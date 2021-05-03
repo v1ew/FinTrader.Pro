@@ -118,79 +118,175 @@ namespace FinTrader.Pro.Bonds
         /// Скачивает данные по облигациям и сохраняет в БД
         /// </summary>
         /// <returns></returns>
-        public async Task UpdateStorageAsync()
+        public async Task UpdateBondsAsync()
         {
             var bonds = await issBondsRepository.LoadBondsAsync();
-            var newBonds = new List<DB.Models.Bond>();
+            var newBonds = new List<Bond>();
+            var changedBonds = new List<Bond>();
             foreach(var bond in bonds)
             {
+                // Не берем бумаги с амортизацией
+                if (await HasAmortizations(bond[BondsColumnNames.SecId])) continue;
+
+                bool isQual = false;
+                int emitter = 0;
+                (isQual, emitter) = await GetBondInfo(bond[BondsColumnNames.SecId]);
+                if (isQual) continue;
+                
+                var bondLoaded = new Bond
+                {
+                    SecId = bond[BondsColumnNames.SecId],
+                    BoardId = bond[BondsColumnNames.BoardId],
+                    ShortName = bond[BondsColumnNames.ShortName],
+                    CouponValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponValue]),
+                    LotSize = NullableValue.TryIntParse(bond[BondsColumnNames.LotSize]),
+                    FaceValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.FaceValue]),
+                    Status = bond[BondsColumnNames.Status],
+                    MatDate = NullableValue.TryDateParse(bond[BondsColumnNames.MatDate]),
+                    CouponPeriod = NullableValue.TryIntParse(bond[BondsColumnNames.CouponPeriod]),
+                    IssueSize = NullableValue.TryLongParse(bond[BondsColumnNames.IssueSize]),
+                    SecName = bond[BondsColumnNames.SecName],
+                    FaceUnit = bond[BondsColumnNames.FaceUnit],
+                    CurrencyId = bond[BondsColumnNames.CurrencyId],
+                    Isin = bond[BondsColumnNames.Isin],
+                    SecType = bond[BondsColumnNames.SecType],
+                    CouponPercent = NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponPercent]),
+                    OfferDate = NullableValue.TryDateParse(bond[BondsColumnNames.OfferDate]),
+                    LotValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.LotValue]),
+                    EmitterId = emitter,
+                };
+                
                 if (!traderRepository.Bonds.Any(b => b.SecId == bond[BondsColumnNames.SecId]))
                 {
-                    newBonds.Add(new DB.Models.Bond
-                    {
-                        SecId = bond[BondsColumnNames.SecId],
-                        BoardId = bond[BondsColumnNames.BoardId],
-                        ShortName = bond[BondsColumnNames.ShortName],
-                        CouponValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponValue]),
-                        NextCoupon = NullableValue.TryDateParse(bond[BondsColumnNames.NextCoupon]),
-                        LotSize = NullableValue.TryIntParse(bond[BondsColumnNames.LotSize]),
-                        FaceValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.FaceValue]),
-                        Status = bond[BondsColumnNames.Status],
-                        MatDate = NullableValue.TryDateParse(bond[BondsColumnNames.MatDate]),
-                        CouponPeriod = NullableValue.TryIntParse(bond[BondsColumnNames.CouponPeriod]),
-                        IssueSize = NullableValue.TryLongParse(bond[BondsColumnNames.IssueSize]),
-                        SecName = bond[BondsColumnNames.SecName],
-                        FaceUnit = bond[BondsColumnNames.FaceUnit],
-                        LatName = bond[BondsColumnNames.LatName],
-                        RegNumber = bond[BondsColumnNames.RegNumber],
-                        CurrencyId = bond[BondsColumnNames.CurrencyId],
-                        Isin = bond[BondsColumnNames.Isin],
-                        SecType = bond[BondsColumnNames.SecType],
-                        CouponPercent = NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponPercent]),
-                        OfferDate = NullableValue.TryDateParse(bond[BondsColumnNames.OfferDate]),
-                        LotValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.LotValue]),
-                    });
+                    newBonds.Add(bondLoaded);
                     //TODO: save log - record created
                 }
                 else
                 {
-                    //TODO: update record, save log
+                    if (haveChanges())
+                    {
+                        changedBonds.Add(bondLoaded);
+                        //TODO: update record, save log
+                    }
                 }
             }
-
-            await traderRepository.AddBondsRangeAsync(newBonds.ToArray());
 
             if (newBonds.Any())
             {
-                foreach (var bond in newBonds)
-                {
-                    var coupons = await issBondsRepository.LoadCouponsAsync(bond.SecId);
-                    if (!coupons.Any())
-                        continue;
+                await traderRepository.AddBondsRangeAsync(newBonds.ToArray());
+            }
 
-                    var newCoupons = new List<DB.Models.Coupon>();
-                    foreach (var coupon in coupons)
-                    {
-                        newCoupons.Add(new DB.Models.Coupon
-                        {
-                            Isin = coupon[CouponsColumnNames.Isin],
-                            CouponDate = NullableValue.TryDateParse(coupon[CouponsColumnNames.CouponDate]),
-                            RecordDate = NullableValue.TryDateParse(coupon[CouponsColumnNames.RecordDate]),
-                            StartDate = NullableValue.TryDateParse(coupon[CouponsColumnNames.StartDate]),
-                            InitialFaceValue = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.InitialFaceValue]),
-                            FaceValue = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.FaceValue]),
-                            FaceUnit = coupon[CouponsColumnNames.FaceUnit],
-                            Value = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.Value]),
-                            ValuePrc = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.ValuePrc]),
-                            ValueRub = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.ValueRub]),
-                        });
-                    }
-
-                    await traderRepository.AddCouponsRangeAsync(newCoupons.ToArray());
-                }
+            if (changedBonds.Any())
+            {
+                await traderRepository.UpdateBondsRangeAsync(changedBonds.ToArray());
             }
         }
 
+        public async Task UpdateCouponsAsync()
+        {
+            var changedBonds = new List<DB.Models.Bond>();
+            var now = DateTime.Now;
+            foreach (var bond in traderRepository.Bonds.Where(b => !b.Discarded))
+            {
+                if (!await UpdateBondCouponsAsync(bond.SecId, now))
+                {
+                    bond.Discarded = true;
+                    changedBonds.Add(bond);
+                }
+            }
+
+            if (changedBonds.Any())
+            {
+                await traderRepository.UpdateBondsRangeAsync(changedBonds.ToArray());
+            }
+        }
+
+        private async Task<bool> HasAmortizations(string secId)
+        {
+            try
+            {
+                var amortizations = await issBondsRepository.LoadAmortizationsAsync(secId);
+                return amortizations.Any(a => a["data_source"] == "amortization");
+            }
+            catch (Exception)
+            {
+                logger.Log(LogLevel.Error, $"Error receiving amortization for {secId}");
+            }
+
+            return false;
+        }
+
+        private async Task<(bool, int)> GetBondInfo(string secId)
+        {
+            bool res1 = false;
+            int res2 = 0;
+
+            try
+            {
+                var bondInfo = await issBondsRepository.LoadBondsInfoAsync(secId);
+                if (bondInfo != null)
+                {
+                    var isQual = bondInfo.Where(i => i["name"] == "ISQUALIFIEDINVESTORS").FirstOrDefault();
+                    bool.TryParse(isQual["value"], out res1);
+
+                    var emitter = bondInfo.Where(i => i["name"] == "EMITTER_ID").FirstOrDefault();
+                    int.TryParse(emitter["value"], out res2);
+                }
+            }
+            catch (Exception)
+            {
+                logger.Log(LogLevel.Error, $"Error by receiving bond info for {secId}");
+            }
+
+            return (res1, res2);
+        }
+        
+        /// <summary>
+        /// Алгоритм обновления:
+        /// Получить данные с сайта биржи
+        /// Проверить, есть ли амортизация: да - деактивировать бумагу
+        /// Если дата амортизации совпадает с датой с датой погашения, то все ок 
+        /// </summary>
+        /// <returns>true - если все ок, иначе - false</returns>
+        private async Task<bool> UpdateBondCouponsAsync(string secId, DateTime now)
+        {
+            var coupons = await issBondsRepository.LoadCouponsAsync(secId);
+            if (!coupons.Any())
+                return false;
+
+            var newCoupons = new List<DB.Models.Coupon>();
+            foreach (var coupon in coupons)
+            {
+                var couponDate = NullableValue.TryDateParse(coupon[CouponsColumnNames.CouponDate]);
+                // Проверяем актуальность выплаты купона по дате
+                if (couponDate.HasValue && couponDate.Value.CompareTo(now) >= 0)
+                {
+                    newCoupons.Add(new DB.Models.Coupon
+                    {
+                        Isin = coupon[CouponsColumnNames.Isin],
+                        CouponDate = couponDate,
+                        RecordDate = NullableValue.TryDateParse(coupon[CouponsColumnNames.RecordDate]),
+                        StartDate = NullableValue.TryDateParse(coupon[CouponsColumnNames.StartDate]),
+                        InitialFaceValue = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.InitialFaceValue]),
+                        FaceValue = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.FaceValue]),
+                        FaceUnit = coupon[CouponsColumnNames.FaceUnit],
+                        Value = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.Value]),
+                        ValuePrc = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.ValuePrc]),
+                        ValueRub = NullableValue.TryDoubleParse(coupon[CouponsColumnNames.ValueRub]),
+                    });
+                }
+            }
+
+            await traderRepository.AddCouponsRangeAsync(newCoupons.ToArray());
+
+            return true;
+        }
+
+        private bool haveChanges()
+        {
+            return true;
+        }
+        
         public async Task DiscardWrongBondsAsync()
         {
             var badBoardIds = new[]

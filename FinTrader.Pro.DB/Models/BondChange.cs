@@ -2,8 +2,10 @@
 
 namespace FinTrader.Pro.DB.Models
 {
-    public class Bond
+    public class BondChange
     {
+        public int Id { get; set; }
+        
         /// <summary>
         /// Код ценной бумаги
         /// </summary>

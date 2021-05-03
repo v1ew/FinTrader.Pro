@@ -9,38 +9,39 @@ namespace FinTrader.Pro.DB.Repositories
 {
     public class FinTraderRepository : IFinTraderRepository
     {
-        private FinTraderDataContext context;
+        private readonly FinTraderDataContext _context;
 
         public FinTraderRepository(FinTraderDataContext ctx)
         {
-            context = ctx;
+            _context = ctx;
         }
 
-        public IQueryable<Bond> Bonds => context.Bonds;
-        public IQueryable<Coupon> Coupons => context.Coupons;
+        public IQueryable<Bond> Bonds => _context.Bonds;
+        public IQueryable<Coupon> Coupons => _context.Coupons;
+        public IQueryable<BondChange> BondChanges => _context.BondChanges;
 
         public async Task UpdateBondsRangeAsync(IEnumerable<Bond> bonds)
         {
-            context.Bonds.UpdateRange(bonds);
-            await context.SaveChangesAsync();
+            _context.Bonds.UpdateRange(bonds);
+            await _context.SaveChangesAsync();
         }
 
         public async Task AddBondsRangeAsync(Bond[] bonds)
         {
-            await context.Bonds.AddRangeAsync(bonds);
-            await context.SaveChangesAsync(default);
+            await _context.Bonds.AddRangeAsync(bonds);
+            await _context.SaveChangesAsync(default);
         }
 
         public async Task AddCouponsRangeAsync(Coupon[] coupons)
         {
-            await context.Coupons.AddRangeAsync(coupons);
-            await context.SaveChangesAsync(default);
+            await _context.Coupons.AddRangeAsync(coupons);
+            await _context.SaveChangesAsync(default);
         }
 
         public async Task ClearCacheAsync()
         {
-            context.Bonds.RemoveRange(Bonds);
-            await context.SaveChangesAsync(default);
+            _context.Bonds.RemoveRange(Bonds);
+            await _context.SaveChangesAsync(default);
         }
     }
 }

@@ -10,6 +10,8 @@ namespace FinTrader.Pro.DB.Repositories
         IQueryable<Bond> Bonds { get; }
 
         IQueryable<Coupon> Coupons { get; }
+        
+        IQueryable<BondChange> BondChanges { get; }
 
         Task AddBondsRangeAsync(Bond[] bonds);
 

@@ -97,11 +97,18 @@ namespace FinTrader.Pro.Bonds
         /// <returns></returns>
         public async Task UpdateBondsAsync()
         {
+            var boardIds = new[]
+            {
+                "TQCB",
+                "TQOB",
+            };
+            
             var bonds = await issBondsRepository.LoadBondsAsync();
             var newBonds = new List<Bond>();
             var changedBonds = new List<Bond>();
             foreach(var bond in bonds)
             {
+                if (!boardIds.Contains(bond[BondsColumnNames.BoardId])) continue;
                 // Если бумагу исключаем, то сохраняем об этом информацию в БД, чтобы в будущем ее не проверять лишний раз
                 var discarded = false;
                 
@@ -215,21 +222,16 @@ namespace FinTrader.Pro.Bonds
         
         public async Task DiscardWrongBondsAsync()
         {
-            var boardIds = new[]
-            {
-                "TQCB",
-                "TQOB",
-            };
-
             var secTypes = new[]
             {
                 "3", // ОФЗ
                 "6", // Корп
                 "8" // Биржевые
             };
+            
             Recorder.Start();
             var badIsins = await traderRepository.Bonds
-                .Where(b => !b.Discarded && (!boardIds.Contains(b.BoardId) || b.FaceUnit != "SUR"))
+                .Where(b => !b.Discarded && b.FaceUnit != "SUR")
                 .Select(b => b.Isin).Distinct().ToListAsync();
 
             var wrongBonds = await traderRepository.Bonds
@@ -432,7 +434,6 @@ namespace FinTrader.Pro.Bonds
         /// <returns>true - если все ок, иначе - false</returns>
         private async Task<bool> UpdateBondCouponsAsync(string secId, DateTime now)
         {
-            // TODO: Добавить проверку на наличие всех купонов до даты погашения, либо оферты
             var coupons = await issBondsRepository.LoadCouponsAsync(secId);
             if (!coupons.Any())
                 return false;

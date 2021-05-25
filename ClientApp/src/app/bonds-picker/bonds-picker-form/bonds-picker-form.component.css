@@ -31,3 +31,9 @@ h3 {
 .col:last-child {
   margin-right: 0;
 }
+
+@media screen and (max-width: 780px){
+  .bonds-picker-card {
+    width: 100%;
+  }
+}

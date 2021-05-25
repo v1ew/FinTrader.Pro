@@ -11,6 +11,8 @@ namespace FinTrader.Pro.DB.Data
         public DbSet<Bond> Bonds { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
         public DbSet<BondChange> BondChanges { get; set; }
+        
+        public DbSet<MarketRecord> MarketRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +24,9 @@ namespace FinTrader.Pro.DB.Data
 
             modelBuilder.Entity<Coupon>()
                 .HasIndex(c => c.Isin);
+
+            modelBuilder.Entity<MarketRecord>()
+                .HasKey(md => new { md.SecId, md.TradeDate });
         }
     }
 }

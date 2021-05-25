@@ -19,6 +19,7 @@ namespace FinTrader.Pro.DB.Repositories
         public IQueryable<Bond> Bonds => _context.Bonds;
         public IQueryable<Coupon> Coupons => _context.Coupons;
         public IQueryable<BondChange> BondChanges => _context.BondChanges;
+        public IQueryable<MarketRecord> MarketRecords => _context.MarketRecords;
 
         public async Task UpdateBondsRangeAsync(IEnumerable<Bond> bonds)
         {
@@ -26,6 +27,18 @@ namespace FinTrader.Pro.DB.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateCouponsRangeAsync(IEnumerable<Coupon> coupons)
+        {
+            _context.Coupons.UpdateRange(coupons);
+            await _context.SaveChangesAsync();
+        }
+        
+        public async Task UpdateMarketRecordsRangeAsync(IEnumerable<MarketRecord> records)
+        {
+            _context.MarketRecords.UpdateRange(records);
+            await _context.SaveChangesAsync();
+        }
+        
         public async Task AddBondsRangeAsync(Bond[] bonds)
         {
             await _context.Bonds.AddRangeAsync(bonds);
@@ -35,6 +48,12 @@ namespace FinTrader.Pro.DB.Repositories
         public async Task AddCouponsRangeAsync(Coupon[] coupons)
         {
             await _context.Coupons.AddRangeAsync(coupons);
+            await _context.SaveChangesAsync(default);
+        }
+        
+        public async Task AddMarketRecordsRangeAsync(MarketRecord[] records)
+        {
+            await _context.MarketRecords.AddRangeAsync(records);
             await _context.SaveChangesAsync(default);
         }
 

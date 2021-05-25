@@ -131,11 +131,6 @@ namespace FinTrader.Pro.DB.Models
         /// Номинальная стоимость лота, в валюте номинала
         /// </summary>
         public double? LotValue { get; set; }
-        
-        /// <summary>
-        /// Бумаги для квалифицированных инвесторов
-        /// </summary>
-        public bool? IsQualifiedInvestors { get; set; }
 
         /// <summary>
         /// Код эмитента

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinTrader.Pro.DB.Migrations
 {
     [DbContext(typeof(FinTraderDataContext))]
-    [Migration("20210503202026_Initial")]
+    [Migration("20210518194712_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,9 +67,6 @@ namespace FinTrader.Pro.DB.Migrations
 
                     b.Property<double?>("InitialFaceValue")
                         .HasColumnType("double precision");
-
-                    b.Property<bool?>("IsQualifiedInvestors")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Isin")
                         .HasColumnType("text");
@@ -288,6 +285,37 @@ namespace FinTrader.Pro.DB.Migrations
                     b.HasIndex("Isin");
 
                     b.ToTable("Coupons");
+                });
+
+            modelBuilder.Entity("FinTrader.Pro.DB.Models.MarketRecord", b =>
+                {
+                    b.Property<string>("SecId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("TradeDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("ChangedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double?>("Duration")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("ModifiedDuration")
+                        .HasColumnType("double precision");
+
+                    b.Property<int?>("Value")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Volume")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Yield")
+                        .HasColumnType("integer");
+
+                    b.HasKey("SecId", "TradeDate");
+
+                    b.ToTable("MarketRecords");
                 });
 #pragma warning restore 612, 618
         }

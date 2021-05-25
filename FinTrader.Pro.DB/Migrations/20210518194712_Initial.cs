@@ -90,7 +90,6 @@ namespace FinTrader.Pro.DB.Migrations
                     CouponPercent = table.Column<double>(nullable: true),
                     OfferDate = table.Column<DateTime>(nullable: true),
                     LotValue = table.Column<double>(nullable: true),
-                    IsQualifiedInvestors = table.Column<bool>(nullable: true),
                     EmitterId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -120,6 +119,24 @@ namespace FinTrader.Pro.DB.Migrations
                     table.PrimaryKey("PK_Coupons", x => x.CouponId);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "MarketRecords",
+                columns: table => new
+                {
+                    SecId = table.Column<string>(nullable: false),
+                    TradeDate = table.Column<DateTime>(nullable: false),
+                    Duration = table.Column<double>(nullable: true),
+                    ModifiedDuration = table.Column<double>(nullable: true),
+                    Yield = table.Column<int>(nullable: true),
+                    Value = table.Column<int>(nullable: true),
+                    Volume = table.Column<int>(nullable: true),
+                    ChangedTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MarketRecords", x => new { x.SecId, x.TradeDate });
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Bonds_Isin",
                 table: "Bonds",
@@ -141,6 +158,9 @@ namespace FinTrader.Pro.DB.Migrations
 
             migrationBuilder.DropTable(
                 name: "Coupons");
+
+            migrationBuilder.DropTable(
+                name: "MarketRecords");
         }
     }
 }

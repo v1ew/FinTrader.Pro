@@ -16,7 +16,6 @@ namespace FinTrader.Pro.Web.Controllers
     public class BondsController : Controller
     {
         private readonly ILogger<HomeController> logger;
-        //private readonly IFinTraderRepository finTraderRepository;
         private readonly IIssBondsRepository issBondsRepository;
         private readonly IBondsService bondsService;
 
@@ -34,10 +33,18 @@ namespace FinTrader.Pro.Web.Controllers
             return Ok("Ok!");
         }
 
+        [HttpGet("update-coupons")]
+        public async Task<IActionResult> UpdateCouponsStorage()
+        {
+            await bondsService.UpdateCouponsAsync();
+            return Ok("Ok!");
+        }
+
         [HttpGet("filter")]
         public async Task<IActionResult> FilterStorage()
         {
             await bondsService.DiscardWrongBondsAsync();
+            await bondsService.CheckCoupons();
             return Ok("Ok!");
         }
     }

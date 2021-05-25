@@ -10,8 +10,12 @@ namespace FinTrader.Pro.Bonds
 
         Task DiscardWrongBondsAsync();
 
+        Task CheckCoupons();
+
         Task UpdateBondsAsync();
         
         Task UpdateCouponsAsync();
+
+        Task UpdateMarketDataAsync();
     }
 }

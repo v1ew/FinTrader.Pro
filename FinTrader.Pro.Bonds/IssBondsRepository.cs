@@ -18,11 +18,6 @@ namespace FinTrader.Pro.Bonds
 
         public async Task<IEnumerable<Dictionary<string, string>>> LoadBondsAsync()
         {
-            var boardIds = new[]
-            {
-                "TQCB",
-                "TQOB",
-            };
             var request = new MarketSecuritiesListRequest(issClient);
             var bonds = await request.FetchAsync("stock", "bonds", new Dictionary<string, string> {
                 { "iss.only", "securities" },
@@ -30,13 +25,10 @@ namespace FinTrader.Pro.Bonds
                 { "iss.df", "%d-%m-%Y" },
                 { "iss.tf", "%H:%M:%S" },
                 { "security_collection", "stock_bonds_all" },
-                { "securities.columns", "SECID,BOARDID,SHORTNAME,ISIN,FACEUNIT,CURRENCYID,COUPONVALUE,COUPONPERCENT,ACCRUEDINT,LOTSIZE,LOTVALUE,FACEVALUE,MATDATE,COUPONPERIOD,ISSUESIZE,OFFERDATE,STATUS,SECTYPE,SECNAME" }
+                { "securities.columns", "SECID,BOARDID,SHORTNAME,ISIN,FACEUNIT,CURRENCYID,COUPONVALUE,COUPONPERCENT,ACCRUEDINT,NEXTCOUPON,LOTSIZE,LOTVALUE,FACEVALUE,MATDATE,COUPONPERIOD,ISSUESIZE,OFFERDATE,STATUS,SECTYPE,SECNAME" }
             });
 
-            // Здесь фильтруем по режиму торгов
-            var data = bonds.Securities.Data.Where(b => boardIds.Contains(b[BondsColumnNames.BoardId]));
-
-            return data;
+            return bonds.Securities.Data;
         }
 
         public async Task<IEnumerable<Dictionary<string, string>>> LoadBondsMarketDataAsync()
@@ -50,9 +42,7 @@ namespace FinTrader.Pro.Bonds
                 { "marketdata.columns", "SECID,BOARDID,NUMTRADES,VOLTODAY,DURATION,MARKETPRICETODAY,YIELDTOOFFER,YIELDLASTCOUPON,VALTODAY_RUR,LCURRENTPRICE" }
             });
 
-            var data = bonds.Securities.Data;
-
-            return data;
+            return bonds.Securities.Data;
         }
 
         public async Task<IEnumerable<Dictionary<string, string>>> LoadCouponsAsync(string secId)

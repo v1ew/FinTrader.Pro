@@ -3,19 +3,14 @@ using System.Threading.Tasks;
 
 namespace FinTrader.Pro.Iss.Requests
 {
-    public class BondCouponsRequest
+    public class BondCouponsRequest : RequestBase
     {
-        private IIssClient issClient;
-
-        public BondCouponsRequest(IIssClient client)
-        {
-            issClient = client;
-        }
+        public BondCouponsRequest(IIssClient client) : base(client) { }
 
         public async Task<BondCouponsResponse> FetchAsync(string sec, IDictionary<string, string> args)
         {
             var url = $"iss/securities/{sec}/bondization.json";
-            return await issClient.GetAsync<BondCouponsResponse>(url, args);
+            return await IssClient.GetAsync<BondCouponsResponse>(url, args);
         }
     }
 }

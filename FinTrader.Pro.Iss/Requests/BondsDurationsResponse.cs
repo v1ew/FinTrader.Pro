@@ -6,6 +6,6 @@ namespace FinTrader.Pro.Iss.Requests
     public class BondsDurationsResponse
     {
         [JsonProperty("durations")]
-        public IssResponsePayload Coupons { get; set; }
+        public IssResponsePayload Durations { get; set; }
     }
 }

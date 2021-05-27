@@ -1,4 +1,5 @@
-﻿using FinTrader.Pro.DB.Data;
+﻿using System;
+using FinTrader.Pro.DB.Data;
 using FinTrader.Pro.DB.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace FinTrader.Pro.DB.Repositories
 
         public IQueryable<Bond> Bonds => _context.Bonds;
         public IQueryable<Coupon> Coupons => _context.Coupons;
-        public IQueryable<BondChange> BondChanges => _context.BondChanges;
-        public IQueryable<MarketRecord> MarketRecords => _context.MarketRecords;
+        public IQueryable<TradeDate> TradeDates => _context.TradeDates;
+        public IQueryable<Config> Config => _context.Config;
 
         public async Task UpdateBondsRangeAsync(IEnumerable<Bond> bonds)
         {
@@ -32,13 +33,13 @@ namespace FinTrader.Pro.DB.Repositories
             _context.Coupons.UpdateRange(coupons);
             await _context.SaveChangesAsync();
         }
-        
-        public async Task UpdateMarketRecordsRangeAsync(IEnumerable<MarketRecord> records)
+
+        public async Task UpdateConfigAsync(Config config)
         {
-            _context.MarketRecords.UpdateRange(records);
+            _context.Config.Update(config);
             await _context.SaveChangesAsync();
         }
-        
+
         public async Task AddBondsRangeAsync(Bond[] bonds)
         {
             await _context.Bonds.AddRangeAsync(bonds);
@@ -50,13 +51,13 @@ namespace FinTrader.Pro.DB.Repositories
             await _context.Coupons.AddRangeAsync(coupons);
             await _context.SaveChangesAsync(default);
         }
-        
-        public async Task AddMarketRecordsRangeAsync(MarketRecord[] records)
+
+        public async Task AddTradeDateAsync(DateTime date)
         {
-            await _context.MarketRecords.AddRangeAsync(records);
+            await _context.TradeDates.AddAsync(new TradeDate { Date = date });
             await _context.SaveChangesAsync(default);
         }
-
+        
         public async Task ClearCacheAsync()
         {
             _context.Bonds.RemoveRange(Bonds);

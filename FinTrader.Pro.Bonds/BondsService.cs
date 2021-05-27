@@ -152,48 +152,6 @@ namespace FinTrader.Pro.Bonds
                 await traderRepository.UpdateBondsRangeAsync(changedBonds);
             }
         }
-
-        public async Task UpdateMarketDataAsync()
-        {
-            var now = DateTime.Now;
-            var marketData = await issBondsRepository.LoadBondsMarketDataAsync();
-            var newRecords = new List<MarketRecord>();
-            var changedRecords = new List<MarketRecord>();
-            
-            foreach (var mr in marketData)
-            {
-                if (!traderRepository.Bonds.Any(b => !b.Discarded && b.SecId == mr[BondsColumnNames.SecId]))
-                    continue;
-                
-                var record = new MarketRecord
-                {
-                    SecId = mr[BondsColumnNames.SecId],
-                    TradeDate = new DateTime(now.Year, now.Month, now.Day, 12, 0, 0),
-                    Value = NullableValue.TryIntParse(mr[BondsColumnNames.ValToday]),
-                    Volume = NullableValue.TryIntParse(mr[BondsColumnNames.VolToday]),
-                    ChangedTime = now
-                };
-                
-                if (traderRepository.MarketRecords.Any(m => m.SecId == record.SecId && m.TradeDate.CompareTo(record.TradeDate) == 0))
-                {
-                    changedRecords.Add(record);
-                }
-                else
-                {
-                    newRecords.Add(record);
-                }
-            }
-
-            if (newRecords.Any())
-            {
-                await traderRepository.AddMarketRecordsRangeAsync(newRecords.ToArray());
-            }
-
-            if (changedRecords.Any())
-            {
-                await traderRepository.UpdateMarketRecordsRangeAsync(newRecords);
-            }
-        }
         
         public async Task UpdateCouponsAsync()
         {
@@ -215,7 +173,11 @@ namespace FinTrader.Pro.Bonds
             {
                 var discardedBonds = await traderRepository.Bonds.Where(b => changedBonds.Contains(b.SecId))
                     .ToListAsync();
-                discardedBonds.ForEach(b => b.Discarded = true);
+                discardedBonds.ForEach(b =>
+                {
+                    b.Discarded = true;
+                    b.Comment = "UpdateCoupons";
+                });
                 await traderRepository.UpdateBondsRangeAsync(discardedBonds);
             }
         }
@@ -245,31 +207,94 @@ namespace FinTrader.Pro.Bonds
 
             if (wrongBonds.Any())
             {
-                wrongBonds.ForEach(b => b.Discarded = true);
+                wrongBonds.ForEach(b =>
+                {
+                    b.Discarded = true;
+                    b.Comment = "DiscardWrongBonds";
+                });
                 await traderRepository.UpdateBondsRangeAsync(wrongBonds);
             }
 
             Recorder.Stop(logger);
         }
 
-        public async Task CheckCoupons()
+        public async Task CheckCouponsAsync()
         {
             var bonds = await traderRepository.Bonds.Where(b => !b.Discarded).ToArrayAsync();
             var badCouponsBonds = new List<Bond>();
             foreach (var bond in bonds)
             {
-                if (!await CheckBondCoupons(bond)) 
+                if (!await CheckBondCouponsAsync(bond)) 
                     badCouponsBonds.Add(bond);
             }
 
             if (badCouponsBonds.Any())
             {
-                badCouponsBonds.ForEach(b => b.Discarded = true);
+                badCouponsBonds.ForEach(b =>
+                {
+                    b.Discarded = true;
+                    b.Comment = "CheckCoupons";
+                });
                 await traderRepository.UpdateBondsRangeAsync(badCouponsBonds);
             }
         }
 
-        private async Task<bool> CheckBondCoupons(Bond bond)
+        public async Task UpdateBondsHistoryAsync()
+        {
+            var dates = await traderRepository.TradeDates
+                .OrderByDescending(d => d.Id).Take(5).ToListAsync();
+            
+            var bonds = await traderRepository.Bonds
+                .Where(b => !b.Discarded).ToListAsync();
+            foreach (var bond in bonds)
+            {
+                var hist = await issBondsRepository
+                    .LoadBondHistoryAsync(bond.SecId, dates[dates.Count - 1].Date);
+                var count = hist.Count();
+                if (count < 1) continue;
+                double sum = 0;
+                foreach (var h in hist)
+                {
+                    var value = NullableValue.TryDoubleParse(h[HistoryColumnNames.Value]);
+                    sum += value ?? 0;
+                }
+
+                bond.ValueAvg = sum / count;
+                var lastHist = hist.Last();
+                bond.Duration = NullableValue.TryDoubleParse(lastHist[HistoryColumnNames.Duration]);
+                bond.Yield = NullableValue.TryDoubleParse(lastHist[HistoryColumnNames.Yield]);
+                bond.ModifiedDuration = bond.Duration / ((1 + bond.Yield / 100) * 365);
+            }
+
+            await traderRepository.UpdateBondsRangeAsync(bonds);
+        }
+        
+        /// <summary>
+        /// Проверяем, есть ли последний день торгов в БД
+        /// </summary>
+        /// <returns>true если новая дата добавлена в БД</returns>
+        public async Task<bool> UpdateTradeDateAsync()
+        {
+            var result = false;
+            TradeDate savedDate = null;
+            
+            if (traderRepository.TradeDates.Any())
+            {
+                var lastId = await traderRepository.TradeDates.MaxAsync(d => d.Id);
+                savedDate = await traderRepository.TradeDates.FirstOrDefaultAsync(d => d.Id == lastId);
+            }
+            var dateIss = await issBondsRepository.LoadDatesAsync();
+            var date = NullableValue.TryDateParse(dateIss["till"]);
+            if (date.HasValue && (savedDate == null || savedDate.Date.CompareTo(date.Value) != 0))
+            {
+                await traderRepository.AddTradeDateAsync(date.Value);
+                result = true;
+            }
+
+            return result;
+        }
+        
+        private async Task<bool> CheckBondCouponsAsync(Bond bond)
         {
             logger.Log(LogLevel.Debug, $"Check coupons for bond {bond.SecId}");
             var result = true;
@@ -401,6 +426,7 @@ namespace FinTrader.Pro.Bonds
                 OfferDate = NullableValue.TryDateParse(bond[BondsColumnNames.OfferDate]),
                 LotValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.LotValue]),
                 EmitterId = emitter,
+                Updated = DateTime.Now,
             };
 
             return bondLoaded;
@@ -518,6 +544,8 @@ namespace FinTrader.Pro.Bonds
                 result = true;
             }
 
+            if (result) bond.Updated = DateTime.Now;
+            
             return result;
         }
 

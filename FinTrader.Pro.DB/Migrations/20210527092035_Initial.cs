@@ -9,52 +9,6 @@ namespace FinTrader.Pro.DB.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BondChanges",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SecId = table.Column<string>(nullable: true),
-                    BoardId = table.Column<string>(nullable: true),
-                    Discarded = table.Column<bool>(nullable: false),
-                    ShortName = table.Column<string>(nullable: true),
-                    PrevWaPrice = table.Column<double>(nullable: true),
-                    YieldAtPrevWaPrice = table.Column<double>(nullable: true),
-                    CouponValue = table.Column<double>(nullable: true),
-                    AccruedInt = table.Column<double>(nullable: true),
-                    PrevPrice = table.Column<double>(nullable: true),
-                    LotSize = table.Column<int>(nullable: true),
-                    InitialFaceValue = table.Column<double>(nullable: true),
-                    FaceValue = table.Column<double>(nullable: true),
-                    Status = table.Column<string>(nullable: true),
-                    MatDate = table.Column<DateTime>(nullable: true),
-                    Decimals = table.Column<int>(nullable: true),
-                    CouponPeriod = table.Column<int>(nullable: true),
-                    IssueSize = table.Column<long>(nullable: true),
-                    PrevLegalClosePrice = table.Column<double>(nullable: true),
-                    PrevAdmittedQuote = table.Column<double>(nullable: true),
-                    PrevDate = table.Column<DateTime>(nullable: true),
-                    SecName = table.Column<string>(nullable: true),
-                    FaceUnit = table.Column<string>(nullable: true),
-                    BuyBackPrice = table.Column<double>(nullable: true),
-                    BuyBackDate = table.Column<DateTime>(nullable: true),
-                    Isin = table.Column<string>(nullable: true),
-                    CurrencyId = table.Column<string>(nullable: true),
-                    IssueSizePlaced = table.Column<long>(nullable: true),
-                    ListLevel = table.Column<int>(nullable: true),
-                    SecType = table.Column<string>(nullable: true),
-                    CouponPercent = table.Column<double>(nullable: true),
-                    OfferDate = table.Column<DateTime>(nullable: true),
-                    LotValue = table.Column<double>(nullable: true),
-                    IsQualifiedInvestors = table.Column<bool>(nullable: true),
-                    EmitterId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BondChanges", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Bonds",
                 columns: table => new
                 {
@@ -66,17 +20,13 @@ namespace FinTrader.Pro.DB.Migrations
                     YieldAtPrevWaPrice = table.Column<double>(nullable: true),
                     CouponValue = table.Column<double>(nullable: true),
                     AccruedInt = table.Column<double>(nullable: true),
-                    PrevPrice = table.Column<double>(nullable: true),
                     LotSize = table.Column<int>(nullable: true),
-                    InitialFaceValue = table.Column<double>(nullable: true),
                     FaceValue = table.Column<double>(nullable: true),
                     Status = table.Column<string>(nullable: true),
                     MatDate = table.Column<DateTime>(nullable: true),
                     Decimals = table.Column<int>(nullable: true),
                     CouponPeriod = table.Column<int>(nullable: true),
                     IssueSize = table.Column<long>(nullable: true),
-                    PrevLegalClosePrice = table.Column<double>(nullable: true),
-                    PrevAdmittedQuote = table.Column<double>(nullable: true),
                     PrevDate = table.Column<DateTime>(nullable: true),
                     SecName = table.Column<string>(nullable: true),
                     FaceUnit = table.Column<string>(nullable: true),
@@ -84,17 +34,32 @@ namespace FinTrader.Pro.DB.Migrations
                     BuyBackDate = table.Column<DateTime>(nullable: true),
                     Isin = table.Column<string>(nullable: true),
                     CurrencyId = table.Column<string>(nullable: true),
-                    IssueSizePlaced = table.Column<long>(nullable: true),
-                    ListLevel = table.Column<int>(nullable: true),
                     SecType = table.Column<string>(nullable: true),
                     CouponPercent = table.Column<double>(nullable: true),
                     OfferDate = table.Column<DateTime>(nullable: true),
                     LotValue = table.Column<double>(nullable: true),
-                    EmitterId = table.Column<int>(nullable: true)
+                    EmitterId = table.Column<int>(nullable: true),
+                    Duration = table.Column<double>(nullable: true),
+                    ModifiedDuration = table.Column<double>(nullable: true),
+                    Yield = table.Column<double>(nullable: true),
+                    ValueAvg = table.Column<double>(nullable: true),
+                    Comment = table.Column<string>(nullable: true),
+                    Updated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Bonds", x => x.SecId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Config",
+                columns: table => new
+                {
+                    BondsCount = table.Column<int>(nullable: false, defaultValue: 6),
+                    MaxYield = table.Column<int>(nullable: false, defaultValue: 15)
+                },
+                constraints: table =>
+                {
                 });
 
             migrationBuilder.CreateTable(
@@ -120,21 +85,16 @@ namespace FinTrader.Pro.DB.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MarketRecords",
+                name: "TradeDates",
                 columns: table => new
                 {
-                    SecId = table.Column<string>(nullable: false),
-                    TradeDate = table.Column<DateTime>(nullable: false),
-                    Duration = table.Column<double>(nullable: true),
-                    ModifiedDuration = table.Column<double>(nullable: true),
-                    Yield = table.Column<int>(nullable: true),
-                    Value = table.Column<int>(nullable: true),
-                    Volume = table.Column<int>(nullable: true),
-                    ChangedTime = table.Column<DateTime>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MarketRecords", x => new { x.SecId, x.TradeDate });
+                    table.PrimaryKey("PK_TradeDates", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
@@ -151,16 +111,16 @@ namespace FinTrader.Pro.DB.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BondChanges");
+                name: "Bonds");
 
             migrationBuilder.DropTable(
-                name: "Bonds");
+                name: "Config");
 
             migrationBuilder.DropTable(
                 name: "Coupons");
 
             migrationBuilder.DropTable(
-                name: "MarketRecords");
+                name: "TradeDates");
         }
     }
 }

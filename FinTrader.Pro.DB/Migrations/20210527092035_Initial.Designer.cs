@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinTrader.Pro.DB.Migrations
 {
     [DbContext(typeof(FinTraderDataContext))]
-    [Migration("20210518194712_Initial")]
+    [Migration("20210527092035_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,9 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<double?>("BuyBackPrice")
                         .HasColumnType("double precision");
 
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
                     b.Property<double?>("CouponPercent")
                         .HasColumnType("double precision");
 
@@ -56,6 +59,9 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<bool>("Discarded")
                         .HasColumnType("boolean");
 
+                    b.Property<double?>("Duration")
+                        .HasColumnType("double precision");
+
                     b.Property<int?>("EmitterId")
                         .HasColumnType("integer");
 
@@ -65,20 +71,11 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<double?>("FaceValue")
                         .HasColumnType("double precision");
 
-                    b.Property<double?>("InitialFaceValue")
-                        .HasColumnType("double precision");
-
                     b.Property<string>("Isin")
                         .HasColumnType("text");
 
                     b.Property<long?>("IssueSize")
                         .HasColumnType("bigint");
-
-                    b.Property<long?>("IssueSizePlaced")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("ListLevel")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("LotSize")
                         .HasColumnType("integer");
@@ -89,20 +86,14 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<DateTime?>("MatDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<double?>("ModifiedDuration")
+                        .HasColumnType("double precision");
+
                     b.Property<DateTime?>("OfferDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<double?>("PrevAdmittedQuote")
-                        .HasColumnType("double precision");
-
                     b.Property<DateTime?>("PrevDate")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<double?>("PrevLegalClosePrice")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("PrevPrice")
-                        .HasColumnType("double precision");
 
                     b.Property<double?>("PrevWaPrice")
                         .HasColumnType("double precision");
@@ -118,6 +109,15 @@ namespace FinTrader.Pro.DB.Migrations
 
                     b.Property<string>("Status")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double?>("ValueAvg")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Yield")
+                        .HasColumnType("double precision");
 
                     b.Property<double?>("YieldAtPrevWaPrice")
                         .HasColumnType("double precision");
@@ -129,118 +129,19 @@ namespace FinTrader.Pro.DB.Migrations
                     b.ToTable("Bonds");
                 });
 
-            modelBuilder.Entity("FinTrader.Pro.DB.Models.BondChange", b =>
+            modelBuilder.Entity("FinTrader.Pro.DB.Models.Config", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("BondsCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasDefaultValue(6);
 
-                    b.Property<double?>("AccruedInt")
-                        .HasColumnType("double precision");
+                    b.Property<int>("MaxYield")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(15);
 
-                    b.Property<string>("BoardId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("BuyBackDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<double?>("BuyBackPrice")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("CouponPercent")
-                        .HasColumnType("double precision");
-
-                    b.Property<int?>("CouponPeriod")
-                        .HasColumnType("integer");
-
-                    b.Property<double?>("CouponValue")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("CurrencyId")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("Decimals")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Discarded")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("EmitterId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("FaceUnit")
-                        .HasColumnType("text");
-
-                    b.Property<double?>("FaceValue")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("InitialFaceValue")
-                        .HasColumnType("double precision");
-
-                    b.Property<bool?>("IsQualifiedInvestors")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Isin")
-                        .HasColumnType("text");
-
-                    b.Property<long?>("IssueSize")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("IssueSizePlaced")
-                        .HasColumnType("bigint");
-
-                    b.Property<int?>("ListLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("LotSize")
-                        .HasColumnType("integer");
-
-                    b.Property<double?>("LotValue")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime?>("MatDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("OfferDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<double?>("PrevAdmittedQuote")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime?>("PrevDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<double?>("PrevLegalClosePrice")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("PrevPrice")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("PrevWaPrice")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("SecId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SecName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SecType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("text");
-
-                    b.Property<double?>("YieldAtPrevWaPrice")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BondChanges");
+                    b.ToTable("Config");
                 });
 
             modelBuilder.Entity("FinTrader.Pro.DB.Models.Coupon", b =>
@@ -287,35 +188,19 @@ namespace FinTrader.Pro.DB.Migrations
                     b.ToTable("Coupons");
                 });
 
-            modelBuilder.Entity("FinTrader.Pro.DB.Models.MarketRecord", b =>
+            modelBuilder.Entity("FinTrader.Pro.DB.Models.TradeDate", b =>
                 {
-                    b.Property<string>("SecId")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<DateTime>("TradeDate")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("ChangedTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.HasKey("Id");
 
-                    b.Property<double?>("Duration")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("ModifiedDuration")
-                        .HasColumnType("double precision");
-
-                    b.Property<int?>("Value")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Volume")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Yield")
-                        .HasColumnType("integer");
-
-                    b.HasKey("SecId", "TradeDate");
-
-                    b.ToTable("MarketRecords");
+                    b.ToTable("TradeDates");
                 });
 #pragma warning restore 612, 618
         }

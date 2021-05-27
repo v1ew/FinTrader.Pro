@@ -4,24 +4,19 @@ using System.Threading.Tasks;
 
 namespace FinTrader.Pro.Iss.Requests
 {
-    public class BondsDurationsRequest
+    public class BondsDurationsRequest : RequestBase
     {
-        private IIssClient _issClient;
-
-        public BondsDurationsRequest(IIssClient client)
-        {
-            _issClient = client;
-        }
+        public BondsDurationsRequest(IIssClient client) : base(client) { }
 
         /// <summary>
         /// Получить дюрации и доходности
         /// </summary>
         /// <param name="args">Date required</param>
         /// <returns></returns>
-        public async Task<BondCouponsResponse> FetchAsync(IDictionary<string, string> args)
+        public async Task<BondsDurationsResponse> FetchAsync(IDictionary<string, string> args)
         {
-            var url = "iss/statistics/engines/stock/markets/bonds/durations.json";
-            return await _issClient.GetAsync<BondCouponsResponse>(url, args);
+            const string url = "iss/statistics/engines/stock/markets/bonds/durations.json";
+            return await IssClient.GetAsync<BondsDurationsResponse>(url, args);
         }
     }
 }

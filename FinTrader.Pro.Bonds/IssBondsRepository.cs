@@ -1,4 +1,5 @@
-﻿using FinTrader.Pro.Iss;
+﻿using System;
+using FinTrader.Pro.Iss;
 using FinTrader.Pro.Iss.Columns;
 using System.Threading.Tasks;
 using System.Linq;
@@ -31,20 +32,43 @@ namespace FinTrader.Pro.Bonds
             return bonds.Securities.Data;
         }
 
-        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondsMarketDataAsync()
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondsDurationsAsync(DateTime date)
         {
-            var request = new MarketSecuritiesListRequest(issClient);
-            var bonds = await request.FetchAsync("stock", "bonds", new Dictionary<string, string> {
-                { "iss.only", "marketdata" },
+            var request = new BondsDurationsRequest(issClient);
+            var bonds = await request.FetchAsync(new Dictionary<string, string> {
+                { "lang", "ru" },
                 { "iss.meta", "off" },
-                { "iss.df", "%d-%m-%Y" },
-                { "iss.tf", "%H:%M:%S" },
-                { "marketdata.columns", "SECID,BOARDID,NUMTRADES,VOLTODAY,DURATION,MARKETPRICETODAY,YIELDTOOFFER,YIELDLASTCOUPON,VALTODAY_RUR,LCURRENTPRICE" }
+                { "date", date.ToString("yyyy-MM-dd") },
+                { "durations.columns", "secid,effectiveyield,duration" }
             });
 
-            return bonds.Securities.Data;
+            return bonds.Durations.Data;
         }
 
+        public async Task<Dictionary<string, string>> LoadDatesAsync()
+        {
+            var request = new DatesRangeRequest(issClient);
+            var dates = await request.FetchAsync(new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+            });
+
+            return dates.Dates.Data.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondHistoryAsync(string secId, DateTime fromDate)
+        {
+            var request = new SecurityHistoryRequest(issClient);
+            var history = await request.FetchAsync("stock", "bonds", secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "from", fromDate.ToString("yyyy-MM-dd") },
+                { "history.columns", "TRADEDATE,VALUE,DURATION,YIELDATWAP" }
+            });
+
+            return history.History.Data;
+        }
+        
         public async Task<IEnumerable<Dictionary<string, string>>> LoadCouponsAsync(string secId)
         {
             var request = new BondCouponsRequest(issClient);

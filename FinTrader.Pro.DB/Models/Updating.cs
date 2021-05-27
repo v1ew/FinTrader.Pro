@@ -40,6 +40,6 @@ namespace FinTrader.Pro.DB.Models
         /// <summary>
         /// Дата и время изменения
         /// </summary>
-        public DateTime ChangedTime { get; set; }
+        public DateTime Changed { get; set; }
     }
 }

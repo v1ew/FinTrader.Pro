@@ -9,10 +9,12 @@ namespace FinTrader.Pro.DB.Data
             : base(options) { }
 
         public DbSet<Bond> Bonds { get; set; }
-        public DbSet<Coupon> Coupons { get; set; }
-        public DbSet<BondChange> BondChanges { get; set; }
         
-        public DbSet<MarketRecord> MarketRecords { get; set; }
+        public DbSet<Coupon> Coupons { get; set; }
+        
+        public DbSet<Config> Config { get; set; }
+        
+        public DbSet<TradeDate> TradeDates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,8 +27,11 @@ namespace FinTrader.Pro.DB.Data
             modelBuilder.Entity<Coupon>()
                 .HasIndex(c => c.Isin);
 
-            modelBuilder.Entity<MarketRecord>()
-                .HasKey(md => new { md.SecId, md.TradeDate });
+            modelBuilder.Entity<Config>().HasNoKey();
+            
+            // Значения параметров по умолчанию
+            modelBuilder.Entity<Config>().Property(c => c.BondsCount).HasDefaultValue(6);
+            modelBuilder.Entity<Config>().Property(c => c.MaxYield).HasDefaultValue(15);
         }
     }
 }

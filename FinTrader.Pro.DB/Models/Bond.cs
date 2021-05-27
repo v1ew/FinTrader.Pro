@@ -23,6 +23,9 @@ namespace FinTrader.Pro.DB.Models
         /// </summary>
         public double? PrevWaPrice { get; set; }
         
+        /// <summary>
+        /// Доходность по оценке пред. дня
+        /// </summary>
         public double? YieldAtPrevWaPrice { get; set; }
         
         /// <summary>
@@ -35,17 +38,7 @@ namespace FinTrader.Pro.DB.Models
         /// </summary>
         public double? AccruedInt { get; set; }
 
-        /// <summary>
-        /// Цена последней сделки пред. дня, % к номиналу
-        /// </summary>
-        public double? PrevPrice { get; set; }
-        
         public int? LotSize { get; set; }
-        
-        /// <summary>
-        /// Первоначальная номинальная стоимость
-        /// </summary>
-        public double? InitialFaceValue { get; set; }
         
         /// <summary>
         /// Номинальная стоимость
@@ -67,10 +60,6 @@ namespace FinTrader.Pro.DB.Models
         /// Объем выпуска
         /// </summary>
         public long? IssueSize { get; set; }
-        
-        public double? PrevLegalClosePrice { get; set; }
-        
-        public double? PrevAdmittedQuote { get; set; }
 
         /// <summary>
         /// Дата последних торгов
@@ -94,7 +83,7 @@ namespace FinTrader.Pro.DB.Models
         
         /// <summary>
         /// Дата, к которой рассчитывается доходность
-        /// (если данное поле не заполнено, то \"Доходность посл.сделки\" рассчитывается к Дате погашения)
+        /// (если данное поле не заполнено, то "Доходность посл.сделки" рассчитывается к Дате погашения)
         /// </summary>
         public DateTime? BuyBackDate { get; set; }
         
@@ -105,16 +94,6 @@ namespace FinTrader.Pro.DB.Models
         /// </summary>
         public string CurrencyId { get; set; }
         
-        /// <summary>
-        /// Количество ценных бумаг в обращении
-        /// </summary>
-        public long? IssueSizePlaced { get; set; }
-        
-        /// <summary>
-        /// Уровень листинга
-        /// </summary>
-        public int? ListLevel { get; set; }
-
         public string SecType { get; set; }
         
         /// <summary>
@@ -136,5 +115,36 @@ namespace FinTrader.Pro.DB.Models
         /// Код эмитента
         /// </summary>
         public int? EmitterId { get; set; }
+        
+        /// <summary>
+        /// Дюрация в днях
+        /// </summary>
+        public double? Duration { get; set; }
+        
+        /// <summary>
+        /// Вычисляется по формуле:
+        /// Дюрация / ((1 + Доходность / 100) * 365) 
+        /// </summary>
+        public double? ModifiedDuration { get; set; }
+        
+        /// <summary>
+        /// Доходность
+        /// </summary>
+        public double? Yield { get; set; }
+
+        /// <summary>
+        /// Объем заключенных сделок в среднем за 5 дней
+        /// </summary>
+        public double? ValueAvg { get; set; }
+
+        /// <summary>
+        /// Комментарий, причина дисквалификации облигации
+        /// </summary>
+        public string Comment { get; set; }
+        
+        /// <summary>
+        /// Время последнего изменения записи
+        /// </summary>
+        public DateTime Updated { get; set; }
     }
 }

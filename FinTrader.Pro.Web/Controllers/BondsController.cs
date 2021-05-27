@@ -44,7 +44,22 @@ namespace FinTrader.Pro.Web.Controllers
         public async Task<IActionResult> FilterStorage()
         {
             await bondsService.DiscardWrongBondsAsync();
-            await bondsService.CheckCoupons();
+            await bondsService.CheckCouponsAsync();
+            return Ok("Ok!");
+        }
+
+        [HttpGet("load-date")]
+        public async Task<IActionResult> LoadDate()
+        {
+            await bondsService.UpdateTradeDateAsync();
+            return Ok("Ok!");
+        }
+
+        [HttpGet("update-history")]
+        public async Task<IActionResult> LoadHistory()
+        {
+            if (await bondsService.UpdateTradeDateAsync())
+                await bondsService.UpdateBondsHistoryAsync();
             return Ok("Ok!");
         }
     }

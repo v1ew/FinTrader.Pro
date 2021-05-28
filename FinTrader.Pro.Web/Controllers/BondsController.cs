@@ -58,8 +58,8 @@ namespace FinTrader.Pro.Web.Controllers
         [HttpGet("update-history")]
         public async Task<IActionResult> LoadHistory()
         {
-            if (await bondsService.UpdateTradeDateAsync())
-                await bondsService.UpdateBondsHistoryAsync();
+            await bondsService.UpdateBondsDurationAsync();
+            await bondsService.UpdateBondsValueAsync();
             return Ok("Ok!");
         }
     }

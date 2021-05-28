@@ -239,7 +239,40 @@ namespace FinTrader.Pro.Bonds
             }
         }
 
-        public async Task UpdateBondsHistoryAsync()
+        /// <summary>
+        /// Обновить дюрацию и доходность
+        /// </summary>
+        public async Task UpdateBondsDurationAsync()
+        {
+            var date = await UpdateTradeDateAsync();
+            var durations = await issBondsRepository.LoadBondsDurationsAsync(date);
+            var updatedBonds = new List<Bond>();
+            foreach (var duration in durations)
+            {
+                var bond = await traderRepository.Bonds
+                    .Where(b => b.SecId == duration[DurationsColumnNames.SecId])
+                    .FirstOrDefaultAsync();
+                if (bond?.Discarded == false)
+                {
+                    bond.Duration = NullableValue.TryDoubleParse(duration[DurationsColumnNames.Duration]);
+                    bond.Yield = NullableValue.TryDoubleParse(duration[DurationsColumnNames.Yield]);
+                    if (bond.Duration.HasValue && bond.Yield.HasValue)
+                    {
+                        bond.ModifiedDuration = bond.Duration / ((1 + bond.Yield / 100) * 365);
+                    }
+                    bond.Updated = DateTime.Now;
+
+                    updatedBonds.Add(bond);
+                }
+            }
+
+            await traderRepository.UpdateBondsRangeAsync(updatedBonds);
+        }
+        
+        /// <summary>
+        /// Обновить средние объемы торгов по бондам
+        /// </summary>
+        public async Task UpdateBondsValueAsync()
         {
             var dates = await traderRepository.TradeDates
                 .OrderByDescending(d => d.Id).Take(5).ToListAsync();
@@ -260,10 +293,7 @@ namespace FinTrader.Pro.Bonds
                 }
 
                 bond.ValueAvg = sum / count;
-                var lastHist = hist.Last();
-                bond.Duration = NullableValue.TryDoubleParse(lastHist[HistoryColumnNames.Duration]);
-                bond.Yield = NullableValue.TryDoubleParse(lastHist[HistoryColumnNames.Yield]);
-                bond.ModifiedDuration = bond.Duration / ((1 + bond.Yield / 100) * 365);
+                bond.Updated = DateTime.Now;
             }
 
             await traderRepository.UpdateBondsRangeAsync(bonds);
@@ -272,10 +302,10 @@ namespace FinTrader.Pro.Bonds
         /// <summary>
         /// Проверяем, есть ли последний день торгов в БД
         /// </summary>
-        /// <returns>true если новая дата добавлена в БД</returns>
-        public async Task<bool> UpdateTradeDateAsync()
+        /// <returns>Актуальную дату последнего дня торгов (ранее сегодня)</returns>
+        public async Task<DateTime> UpdateTradeDateAsync()
         {
-            var result = false;
+            var result = DateTime.Today;
             TradeDate savedDate = null;
             
             if (traderRepository.TradeDates.Any())
@@ -288,7 +318,11 @@ namespace FinTrader.Pro.Bonds
             if (date.HasValue && (savedDate == null || savedDate.Date.CompareTo(date.Value) != 0))
             {
                 await traderRepository.AddTradeDateAsync(date.Value);
-                result = true;
+                result = date.Value;
+            }
+            else if (savedDate != null)
+            {
+                result = savedDate.Date;
             }
 
             return result;

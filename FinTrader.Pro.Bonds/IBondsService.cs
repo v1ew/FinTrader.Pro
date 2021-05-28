@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FinTrader.Pro.Contracts;
 using FinTrader.Pro.DB.Models;
 
@@ -14,10 +15,12 @@ namespace FinTrader.Pro.Bonds
 
         Task UpdateBondsAsync();
 
-        Task UpdateBondsHistoryAsync();
+        Task UpdateBondsValueAsync();
         
         Task UpdateCouponsAsync();
 
-        Task<bool> UpdateTradeDateAsync();
+        Task UpdateBondsDurationAsync();
+
+        Task<DateTime> UpdateTradeDateAsync();
     }
 }

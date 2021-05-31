@@ -32,7 +32,7 @@ namespace FinTrader.Pro.Bonds
             this.logger = logger;
         }
 
-        public async Task<BondSet> SelectBondsAsync(BondsPickerParams filter)
+        public async Task<Portfolio> SelectBondsAsync(BondsPickerParams filter)
         {
             var bonds = traderRepository.Bonds.Where(b => !b.Discarded);
             
@@ -84,11 +84,25 @@ namespace FinTrader.Pro.Bonds
                 Isin = b.Isin
             });
 
-            return new BondSet
+            // TODO: move up
+            var result = new Portfolio
             {
-                Bonds = await selectedBonds.ToArrayAsync(),
-                Coupons = await GetCouponsAsync(selectedBonds.ToDictionary(b => b.Isin, b => b.ShortName))
+                Includes = "Корпоративные облигации",
+                Sum = 1000000,
+                Pay = 50000,
+                Yields = 10,
+                MatDate = new DateTime(2031, 12, 31),
+                BondSets = new List<BondSet>()
             };
+            
+            result.BondSets.Add(new BondSet
+                {
+                    Bonds = await selectedBonds.ToArrayAsync(),
+                    Coupons = await GetCouponsAsync(selectedBonds.ToDictionary(b => b.Isin, b => b.ShortName))
+                }
+            );
+            
+            return result;
         }
 
         /// <summary>

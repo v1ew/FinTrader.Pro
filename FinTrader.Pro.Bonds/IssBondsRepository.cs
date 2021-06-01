@@ -63,7 +63,7 @@ namespace FinTrader.Pro.Bonds
             {
                 { "iss.meta", "off" },
                 { "from", fromDate.ToString("yyyy-MM-dd") },
-                { "history.columns", "TRADEDATE,VALUE,DURATION,YIELDATWAP" }
+                { "history.columns", "TRADEDATE,VALUE,DURATION,YIELDATWAP,WAPRICE" }
             });
 
             return history.History.Data;

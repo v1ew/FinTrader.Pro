@@ -138,6 +138,11 @@ namespace FinTrader.Pro.DB.Models
         public double? ValueAvg { get; set; }
 
         /// <summary>
+        /// Средневзвешенная цена, % к номиналу
+        /// </summary>
+        public double? WaPrice { get; set; }
+        
+        /// <summary>
         /// Комментарий, причина дисквалификации облигации
         /// </summary>
         public string Comment { get; set; }

@@ -24,6 +24,7 @@ namespace FinTrader.Pro.Bonds
         private readonly ILogger<BondsService> logger;
         // TODO: перенести в параметры
         private const int BONDS_NUM = 6;
+        private const int MAX_YIELD = 15;
 
         public BondsService(IIssBondsRepository issBondsRepo, IFinTraderRepository traderRepo, ILogger<BondsService> logger)
         {
@@ -34,11 +35,12 @@ namespace FinTrader.Pro.Bonds
 
         public async Task<Portfolio> SelectBondsAsync(BondsPickerParams filter)
         {
-            var bonds = traderRepository.Bonds.Where(b => !b.Discarded);
+            var bonds = traderRepository.Bonds
+                .Where(b => !b.Discarded && b.Yield > 0 && b.Yield <= MAX_YIELD && b.ValueAvg > 0);
             
             if (filter.IsIncludedCorporate != filter.IsIncludedFederal)
             {
-                if (filter.IsIncludedCorporate) // выбираем только корпоративные
+                if (filter.IsIncludedCorporate) // выбираем корпоративные и биржевые
                 {
                     bonds = bonds.Where(b => b.SecType != "3");
                 }
@@ -51,7 +53,7 @@ namespace FinTrader.Pro.Bonds
             switch (filter.BondsClass)
             {
                 case BondClass.MostLiquid:
-                    bonds = bonds.OrderByDescending(b => b.CouponPercent);
+                    bonds = bonds.OrderBy(b => b.ValueAvg);
                     break;
                 case BondClass.MostProfitable:
                     bonds = bonds.OrderByDescending(b => b.CouponPercent);
@@ -300,13 +302,16 @@ namespace FinTrader.Pro.Bonds
                 var count = hist.Count();
                 if (count < 1) continue;
                 double sum = 0;
+                string wpstr = null;
                 foreach (var h in hist)
                 {
                     var value = NullableValue.TryDoubleParse(h[HistoryColumnNames.Value]);
                     sum += value ?? 0;
+                    wpstr = h[HistoryColumnNames.WaPrice];
                 }
 
                 bond.ValueAvg = sum / count;
+                bond.WaPrice = NullableValue.TryDoubleParse(wpstr);
                 bond.Updated = DateTime.Now;
             }
 

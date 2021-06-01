@@ -5,6 +5,7 @@ import { Repository } from "../../models/repository";
 import { BondSet } from "../../models/bond-set.model";
 import { BondSelected } from "../../models/bond-selected.model";
 import { CouponSelected } from "../../models/coupon-selected.model";
+import {Portfolio} from "../../models/portfolio.model";
 
 @Component({
   selector: 'app-bonds-picker-result',
@@ -18,17 +19,22 @@ export class BondsPickerResultComponent implements OnInit {
   constructor(private readonly router: Router, private readonly repo: Repository) {
   }
 
+  // Если форму еще не отправляли, то переадресуем на форму
   ngOnInit(): void {
     if (!this.repo.formSent) {
       this.router.navigate(["form"]);
     }
   }
 
+  get portfolio(): Portfolio {
+    return this.repo.portfolio;
+  }
+
   get bondsSource(): BondSelected[] {
-    return this.repo.bondSet.bonds;
+    return this.repo.portfolio.bondSets[0].bonds;
   }
 
   get couponsSource(): CouponSelected[] {
-    return this.repo.bondSet.coupons;
+    return this.repo.portfolio.bondSets[0].coupons;
   }
 }

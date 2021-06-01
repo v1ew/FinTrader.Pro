@@ -1,10 +1,10 @@
 <h2>Мы подобрали портфель:</h2>
 <ul class="bonds-req-results">
-  <li><span>Портфель включает:</span> </li>
-  <li><span>Затраты на создание портфеля:</span> </li>
-  <li><span>В среднем этот портфель будет приносить:</span> </li>
-  <li><span>Доходность портфеля к погашению составит:</span> </li>
-  <li><span>Этот портфель полностью выйдет в деньги:</span> </li>
+  <li><span>Портфель включает:</span> {{portfolio.includes}}</li>
+  <li><span>Затраты на создание портфеля:</span> {{portfolio.sum}} руб.</li>
+  <li><span>В среднем этот портфель будет приносить:</span> {{portfolio.pay}} руб.</li>
+  <li><span>Доходность портфеля к погашению составит:</span> {{portfolio.yields}} %</li>
+  <li><span>Этот портфель полностью выйдет в деньги:</span> {{portfolio.matDate | date:'dd.MM.yyyy'}}</li>
 </ul>
 <mat-tab-group>
   <mat-tab label="Портфель">

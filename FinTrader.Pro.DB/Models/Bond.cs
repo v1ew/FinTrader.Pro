@@ -29,6 +29,11 @@ namespace FinTrader.Pro.DB.Models
         public double? YieldAtPrevWaPrice { get; set; }
         
         /// <summary>
+        /// Дата окончания купона
+        /// </summary>
+        public DateTime? NextCoupon { get; set; }
+        
+        /// <summary>
         /// Сумма купона, в валюте номинала
         /// </summary>
         public double? CouponValue { get; set; }
@@ -136,11 +141,6 @@ namespace FinTrader.Pro.DB.Models
         /// Объем заключенных сделок в среднем за 5 дней
         /// </summary>
         public double? ValueAvg { get; set; }
-
-        /// <summary>
-        /// Средневзвешенная цена, % к номиналу
-        /// </summary>
-        public double? WaPrice { get; set; }
         
         /// <summary>
         /// Комментарий, причина дисквалификации облигации

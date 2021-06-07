@@ -142,19 +142,20 @@ namespace FinTrader.Pro.Bonds
                     discarded = true;
                 }
 
+                var bondLoaded = MakeBond(bond, emitter, discarded);
                 if (existingBond == null)
                 {
-                    var bondLoaded = MakeBond(bond, emitter, discarded);
                     newBonds.Add(bondLoaded);
                     //TODO: save log - record created
                 }
                 else
                 {
-                    if (haveChanges(existingBond, bond))
-                    {
-                        changedBonds.Add(existingBond);
-                        //TODO: update record, save log
-                    }
+                    changedBonds.Add(bondLoaded);
+                    // if (haveChanges(existingBond, bond))
+                    // {
+                    //     changedBonds.Add(existingBond);
+                    //     //TODO: update record, save log
+                    // }
                 }
             }
 
@@ -217,8 +218,10 @@ namespace FinTrader.Pro.Bonds
                                              || b.SecType == null
                                              || !secTypes.Contains(b.SecType)  // оставляем только ОФЗ, корп. и биржевые
                                              || (!b.MatDate.HasValue && !b.OfferDate.HasValue)
+                                             || b.LotValue > 10000
+                                             || b.CouponPeriod > 200
                                              || b.CouponPercent == null 
-                                             || b.CouponPercent > 15))
+                                             || b.CouponPercent < 1 || b.CouponPercent > MAX_YIELD))
                 .ToListAsync();
 
             if (wrongBonds.Any())
@@ -302,16 +305,13 @@ namespace FinTrader.Pro.Bonds
                 var count = hist.Count();
                 if (count < 1) continue;
                 double sum = 0;
-                string wpstr = null;
                 foreach (var h in hist)
                 {
                     var value = NullableValue.TryDoubleParse(h[HistoryColumnNames.Value]);
                     sum += value ?? 0;
-                    wpstr = h[HistoryColumnNames.WaPrice];
                 }
 
                 bond.ValueAvg = sum / count;
-                bond.WaPrice = NullableValue.TryDoubleParse(wpstr);
                 bond.Updated = DateTime.Now;
             }
 
@@ -468,8 +468,11 @@ namespace FinTrader.Pro.Bonds
                 FaceValue = NullableValue.TryDoubleParse(bond[BondsColumnNames.FaceValue]),
                 Status = bond[BondsColumnNames.Status],
                 MatDate = NullableValue.TryDateParse(bond[BondsColumnNames.MatDate]),
+                NextCoupon = NullableValue.TryDateParse(bond[BondsColumnNames.NextCoupon]),
                 CouponPeriod = NullableValue.TryIntParse(bond[BondsColumnNames.CouponPeriod]),
                 IssueSize = NullableValue.TryLongParse(bond[BondsColumnNames.IssueSize]),
+                PrevWaPrice = NullableValue.TryDoubleParse(bond[BondsColumnNames.PrevWaPrice]),
+                YieldAtPrevWaPrice = NullableValue.TryDoubleParse(bond[BondsColumnNames.YieldAtPrevWaPrice]),
                 SecName = bond[BondsColumnNames.SecName],
                 FaceUnit = bond[BondsColumnNames.FaceUnit],
                 CurrencyId = bond[BondsColumnNames.CurrencyId],

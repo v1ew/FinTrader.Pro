@@ -27,5 +27,9 @@ namespace FinTrader.Pro.Contracts.Bonds
         public double Sum { get; set; }
         
         public string Isin { get; set; }
+        
+        public double Cost { get; set; }
+        
+        public double K { get; set; }
     }
 }

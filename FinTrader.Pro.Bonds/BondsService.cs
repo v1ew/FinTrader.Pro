@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FinTrader.Pro.Bonds.Extensions;
 using FinTrader.Pro.Bonds.Helpers;
+using FinTrader.Pro.Bonds.Selector;
 using FinTrader.Pro.Contracts;
 using FinTrader.Pro.Contracts.Bonds;
 using FinTrader.Pro.Contracts.Enums;
@@ -53,7 +54,7 @@ namespace FinTrader.Pro.Bonds
             switch (filter.BondsClass)
             {
                 case BondClass.MostLiquid:
-                    bonds = bonds.OrderBy(b => b.ValueAvg);
+                    bonds = bonds.OrderByDescending(b => b.ValueAvg);
                     break;
                 case BondClass.MostProfitable:
                     bonds = bonds.OrderByDescending(b => b.CouponPercent);
@@ -69,28 +70,45 @@ namespace FinTrader.Pro.Bonds
                     break;
             }
 
-            var bondIds = await bonds//.Distinct(new BondsComparer())//.GroupBy(b => b.SecId).Select(g => g.First())
-                .OrderByDescending(b => b.CouponPercent)
-                .Select(b => b.SecId)
-                .Distinct()
-                .Take(BONDS_NUM).ToArrayAsync();
-            var selectedBonds = bonds
-                .Where(b => bondIds.Contains(b.SecId))
+            var bondsSel = Runner.Select(bonds.OrderByDescending(b => b.CouponPercent));
+            var selectedBonds = await bonds
+                .Where(b => bondsSel.BondsList.Keys.Contains(b.Isin))
                 .Select(b => new SelectedBond
             {
                 ShortName = b.ShortName,
                 MatDate = b.MatDate.Value,
                 CouponValue = b.CouponValue.Value,
                 AmountToBye = 10,
-                Sum = b.FaceValue.Value * 10,
-                Isin = b.Isin
-            });
+                Sum = 0.0,
+                Isin = b.Isin,
+                Cost = b.PrevWaPrice.Value * b.FaceValue.Value / 100
+            }).ToListAsync();
 
+            double invAmount = 0.0;
+            if (filter.Amount.HasValue)
+            {
+                if (filter.Method == CalculationMethod.InvestmentAmount)
+                {
+                    invAmount = filter.Amount.Value * 1.03;
+                    double cAvg = selectedBonds.Average(s => s.CouponValue);
+                    selectedBonds.ForEach(s => s.K = (1 + (1 - s.CouponValue / cAvg)));
+                    double oneBond = invAmount / selectedBonds.Count();
+                    selectedBonds.ForEach(s => s.Sum = oneBond * s.K);
+                    selectedBonds.ForEach(s => s.AmountToBye = (int)(s.Sum / s.Cost));
+                }
+                else
+                {
+                    double monthPay = filter.Amount.Value;
+                    selectedBonds.ForEach(s => s.AmountToBye = (int)Math.Round(monthPay / s.CouponValue));
+                    selectedBonds.ForEach(s => s.Sum = s.AmountToBye * s.Cost);
+                    invAmount = selectedBonds.Sum(s => s.Sum);
+                }
+            }
             // TODO: move up
             var result = new Portfolio
             {
                 Includes = "Корпоративные облигации",
-                Sum = 1000000,
+                Sum = invAmount,
                 Pay = 50000,
                 Yields = 10,
                 MatDate = new DateTime(2031, 12, 31),
@@ -99,8 +117,8 @@ namespace FinTrader.Pro.Bonds
             
             result.BondSets.Add(new BondSet
                 {
-                    Bonds = await selectedBonds.ToArrayAsync(),
-                    Coupons = await GetCouponsAsync(selectedBonds.ToDictionary(b => b.Isin, b => b.ShortName))
+                    Bonds = selectedBonds.ToArray(),
+                    Coupons = await GetCouponsAsync(selectedBonds.ToDictionary(b => b.Isin, b => b))
                 }
             );
             
@@ -385,7 +403,7 @@ namespace FinTrader.Pro.Bonds
         /// </summary>
         /// <param name="bonds">Dictionary with key = isin, value = shortName</param>
         /// <returns></returns>
-        private async Task<SelectedCoupon[]> GetCouponsAsync(IDictionary<string, string> bonds)
+        private async Task<SelectedCoupon[]> GetCouponsAsync(IDictionary<string, SelectedBond> bonds)
         {
             var today = DateTime.Now;
             return await traderRepository.Coupons
@@ -394,10 +412,10 @@ namespace FinTrader.Pro.Bonds
                             && c.CouponDate.Value.CompareTo(today) >= 0)
                 .Select(c => new SelectedCoupon
                 {
-                    ShortName = bonds[c.Isin],
+                    ShortName = bonds[c.Isin].ShortName,
                     Isin = c.Isin,
                     Date = c.CouponDate ?? DateTime.MinValue,
-                    Value = c.Value ?? 0,
+                    Value = (c.Value ?? 0) * bonds[c.Isin].AmountToBye,
                     Comment = ""
                 })
                 .OrderBy(sc => sc.Date)

@@ -12,5 +12,11 @@ namespace FinTrader.Pro.Iss.Requests
             var url = $"iss/history/engines/{engine}/markets/{market}/securities/{secId}.json";
             return await IssClient.GetAsync<SecurityHistoryResponse>(url, args);
         }
+
+        public async Task<SecurityHistoryResponse> FetchAsync(string engine, string market, string boardId, string secId, IDictionary<string, string> args)
+        {
+            var url = $"iss/history/engines/{engine}/markets/{market}/boards/{boardId}/securities/{secId}.json";
+            return await IssClient.GetAsync<SecurityHistoryResponse>(url, args);
+        }
     }
 }

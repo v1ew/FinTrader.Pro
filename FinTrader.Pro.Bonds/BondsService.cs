@@ -36,8 +36,11 @@ namespace FinTrader.Pro.Bonds
 
         public async Task<Portfolio> SelectBondsAsync(BondsPickerParams filter)
         {
+            var oneYearPlus = DateTime.Now.AddYears(1).AddDays(1);
             var bonds = traderRepository.Bonds
-                .Where(b => !b.Discarded && b.Yield > 0 && b.Yield <= MAX_YIELD && b.ValueAvg > 0);
+                .Where(b => !b.Discarded && b.Yield > 0 && b.Yield <= MAX_YIELD && b.ValueAvg > 0)
+                .Where(b => (b.OfferDate ?? b.MatDate).HasValue) // есть дата погашения или оферты
+                .Where(b => (b.OfferDate ?? b.MatDate).Value.CompareTo(oneYearPlus) > 0); // и эта дата дальше года
             
             if (filter.IsIncludedCorporate != filter.IsIncludedFederal)
             {
@@ -255,6 +258,10 @@ namespace FinTrader.Pro.Bonds
             Recorder.Stop(logger);
         }
 
+        /// <summary>
+        /// Выявляет облигации, у которых с купонами не все в порядке
+        /// Отмечает их Discarded
+        /// </summary>
         public async Task CheckCouponsAsync()
         {
             var bonds = await traderRepository.Bonds.Where(b => !b.Discarded).ToArrayAsync();
@@ -337,34 +344,66 @@ namespace FinTrader.Pro.Bonds
         }
         
         /// <summary>
-        /// Проверяем, есть ли последний день торгов в БД
+        /// Проверяем, есть ли последние 5 дней торгов в БД
+        /// Если не хватает,то добавляем новые даты
         /// </summary>
         /// <returns>Актуальную дату последнего дня торгов (ранее сегодня)</returns>
         public async Task<DateTime> UpdateTradeDateAsync()
         {
-            var result = DateTime.Today;
+            var result = DateTime.Today.AddDays(-1);
             TradeDate savedDate = null;
+            List<TradeDate> newDates = new List<TradeDate>();
+            
+            var last5Dates = await GetLastFiveTradeDatesAsync();
+            foreach (var date in last5Dates)
+            {
+                if (!traderRepository.TradeDates.Any(d => d.Date.CompareTo(date) == 0))
+                {
+                    newDates.Add(new TradeDate {Date = date});
+                }
+            }
+
+            if (newDates.Any())
+            {
+                await traderRepository.AddTradeDatesAsync(newDates.ToArray());
+            }
             
             if (traderRepository.TradeDates.Any())
             {
                 var lastId = await traderRepository.TradeDates.MaxAsync(d => d.Id);
                 savedDate = await traderRepository.TradeDates.FirstOrDefaultAsync(d => d.Id == lastId);
-            }
-            var dateIss = await issBondsRepository.LoadDatesAsync();
-            var date = NullableValue.TryDateParse(dateIss["till"]);
-            if (date.HasValue && (savedDate == null || savedDate.Date.CompareTo(date.Value) != 0))
-            {
-                await traderRepository.AddTradeDateAsync(date.Value);
-                result = date.Value;
-            }
-            else if (savedDate != null)
-            {
                 result = savedDate.Date;
             }
 
             return result;
         }
+
+        /// <summary>
+        /// Получить с сайта биржи список из последних 5 торговых дней
+        /// </summary>
+        /// <returns>Список дат</returns>
+        private async Task<List<DateTime>> GetLastFiveTradeDatesAsync()
+        {
+            // Получить первый попавшийся бонд
+            var secId = await issBondsRepository.LoadAnyBondAsync();
+
+            if (secId == string.Empty) return new List<DateTime>();
+            
+            // Получить дату первого числа предыдущего месяца
+            var startDate = DateTime.Now.AddMonths(-1).AddDays(-DateTime.Now.Day + 1);
+
+            var dates = await issBondsRepository.LoadBondHistoryDatesAsync(secId, startDate);
+
+            return dates.TakeLast(5)
+                .Select(d => NullableValue.TryDateParse(d[HistoryColumnNames.TradeDate]) ?? DateTime.Now)
+                .ToList();
+        }
         
+        /// <summary>
+        /// Проверяет наличие всех купонов облигации до даты погашения или ближайшей даты оферты
+        /// </summary>
+        /// <param name="bond">Облигация, для которой проверяем</param>
+        /// <returns>true - если все нормально</returns>
         private async Task<bool> CheckBondCouponsAsync(Bond bond)
         {
             logger.Log(LogLevel.Debug, $"Check coupons for bond {bond.SecId}");

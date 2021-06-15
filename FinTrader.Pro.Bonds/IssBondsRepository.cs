@@ -45,6 +45,37 @@ namespace FinTrader.Pro.Bonds
             return bonds.Durations.Data;
         }
 
+        /// <summary>
+        /// Возвращает первый попавшийся бонд (ОФЗ)
+        /// </summary>
+        /// <returns>Строка SecId найденного бонда, либо пустая строка</returns>
+        public async Task<string> LoadAnyBondAsync()
+        {
+            var requestedField = "SECID";
+            var request = new CollectionSecuritiesListRequest(issClient);
+            
+            var bonds = await request.FetchAsync("stock_bonds", "stock_bonds_ofz_all", new Dictionary<string, string>
+            {
+                {"iss.meta", "off"},
+                {"securities.columns", requestedField}
+            });
+
+            return bonds.Securities.Data?.FirstOrDefault()?[requestedField] ?? string.Empty;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondHistoryDatesAsync(string secId, DateTime fromDate)
+        {
+            var request = new SecurityHistoryRequest(issClient);
+            var history = await request.FetchAsync("stock", "bonds", "TQCB", secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "from", fromDate.ToString("yyyy-MM-dd") },
+                { "history.columns", "TRADEDATE" }
+            });
+
+            return history.History.Data;
+        }
+        
         public async Task<Dictionary<string, string>> LoadDatesAsync()
         {
             var request = new DatesRangeRequest(issClient);

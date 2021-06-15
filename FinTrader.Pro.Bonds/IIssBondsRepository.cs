@@ -21,6 +21,10 @@ namespace FinTrader.Pro.Bonds
 
         Task<IEnumerable<Dictionary<string, string>>> LoadOffersAsync(string secId);
         
+        Task<string> LoadAnyBondAsync();
+
+        Task<IEnumerable<Dictionary<string, string>>> LoadBondHistoryDatesAsync(string secId, DateTime fromDate);
+
         Task<IEnumerable<Dictionary<string, string>>> LoadBondsInfoAsync(string secId);
     }
 }

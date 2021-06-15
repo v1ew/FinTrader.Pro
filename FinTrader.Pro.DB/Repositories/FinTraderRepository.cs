@@ -52,9 +52,9 @@ namespace FinTrader.Pro.DB.Repositories
             await _context.SaveChangesAsync(default);
         }
 
-        public async Task AddTradeDateAsync(DateTime date)
+        public async Task AddTradeDatesAsync(TradeDate[] dates)
         {
-            await _context.TradeDates.AddAsync(new TradeDate { Date = date });
+            await _context.TradeDates.AddRangeAsync(dates);
             await _context.SaveChangesAsync(default);
         }
         

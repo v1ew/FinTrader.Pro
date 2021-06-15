@@ -21,7 +21,7 @@ namespace FinTrader.Pro.DB.Repositories
 
         Task AddCouponsRangeAsync(Coupon[] coupons);
 
-        Task AddTradeDateAsync(DateTime date);
+        Task AddTradeDatesAsync(TradeDate[] dates);
 
         Task UpdateBondsRangeAsync(IEnumerable<Bond> bonds);
 

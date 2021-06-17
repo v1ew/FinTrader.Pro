@@ -33,5 +33,14 @@ namespace FinTrader.Pro.DB.Data
             modelBuilder.Entity<Config>().Property(c => c.BondsCount).HasDefaultValue(6);
             modelBuilder.Entity<Config>().Property(c => c.MaxYield).HasDefaultValue(15);
         }
+        
+        /// <summary>
+        /// Debug info
+        /// </summary>
+        /// <param name="optionsBuilder"></param>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
     }
 }

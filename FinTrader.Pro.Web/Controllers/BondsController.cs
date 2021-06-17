@@ -30,6 +30,11 @@ namespace FinTrader.Pro.Web.Controllers
         public async Task<IActionResult> UpdateStorage()
         {
             await bondsService.UpdateBondsAsync();
+            await bondsService.DiscardWrongBondsAsync();
+            await bondsService.UpdateCouponsAsync();
+            await bondsService.CheckCouponsAsync();
+            await bondsService.UpdateBondsDurationAsync();
+            await bondsService.UpdateBondsValueAsync();
             return Ok("Ok!");
         }
 

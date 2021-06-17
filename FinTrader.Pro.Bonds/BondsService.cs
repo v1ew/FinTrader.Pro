@@ -82,12 +82,15 @@ namespace FinTrader.Pro.Bonds
                 MatDate = b.MatDate.Value,
                 CouponValue = b.CouponValue.Value,
                 AmountToBye = 10,
+                Yield = b.Yield.Value,
                 Sum = 0.0,
                 Isin = b.Isin,
                 Cost = b.PrevWaPrice.Value * b.FaceValue.Value / 100
             }).ToListAsync();
 
             double invAmount = 0.0;
+            int avgPay = 0;
+            double avgYield = 0.0;
             if (filter.Amount.HasValue)
             {
                 if (filter.Method == CalculationMethod.InvestmentAmount)
@@ -98,23 +101,27 @@ namespace FinTrader.Pro.Bonds
                     double oneBond = invAmount / selectedBonds.Count();
                     selectedBonds.ForEach(s => s.Sum = oneBond * s.K);
                     selectedBonds.ForEach(s => s.AmountToBye = (int)(s.Sum / s.Cost));
+                    avgPay = (int)selectedBonds.Average(s => s.AmountToBye * s.CouponValue);
+                    avgYield = selectedBonds.Average(s => s.Yield);
                 }
                 else
                 {
                     double monthPay = filter.Amount.Value;
+                    avgPay = (int)monthPay;
                     selectedBonds.ForEach(s => s.AmountToBye = (int)Math.Round(monthPay / s.CouponValue));
                     selectedBonds.ForEach(s => s.Sum = s.AmountToBye * s.Cost);
                     invAmount = selectedBonds.Sum(s => s.Sum);
+                    avgYield = selectedBonds.Average(s => s.Yield);
                 }
             }
             // TODO: move up
             var result = new Portfolio
             {
-                Includes = "Корпоративные облигации",
+                Includes = (filter.IsIncludedCorporate ? "Корпоративные облигации" : "") + (filter.IsIncludedFederal ? (filter.IsIncludedCorporate ? " и ОФЗ" : "ОФЗ") : ""),
                 Sum = invAmount,
-                Pay = 50000,
-                Yields = 10,
-                MatDate = new DateTime(2031, 12, 31),
+                Pay = avgPay,
+                Yields = avgYield,
+                MatDate = selectedBonds.Max(s => s.MatDate),
                 BondSets = new List<BondSet>()
             };
             
@@ -171,12 +178,12 @@ namespace FinTrader.Pro.Bonds
                 }
                 else
                 {
-                    changedBonds.Add(bondLoaded);
-                    // if (haveChanges(existingBond, bond))
-                    // {
-                    //     changedBonds.Add(existingBond);
-                    //     //TODO: update record, save log
-                    // }
+                    //changedBonds.Add(bondLoaded);
+                    if (haveChanges(existingBond, bondLoaded))
+                    {
+                        changedBonds.Add(existingBond);
+                        //TODO: update record, save log
+                    }
                 }
             }
 
@@ -355,7 +362,7 @@ namespace FinTrader.Pro.Bonds
             List<TradeDate> newDates = new List<TradeDate>();
             
             var last5Dates = await GetLastFiveTradeDatesAsync();
-            foreach (var date in last5Dates)
+            foreach (var date in last5Dates.OrderBy(d => d.Date))
             {
                 if (!traderRepository.TradeDates.Any(d => d.Date.CompareTo(date) == 0))
                 {
@@ -624,36 +631,32 @@ namespace FinTrader.Pro.Bonds
         /// </summary>
         /// <param name="bondLoaded">Загруженные данные по облигации</param>
         /// <returns>true, если есть отличия</returns>
-        private bool haveChanges(Bond bond, Dictionary<string, string> bondLoaded)
+        private bool haveChanges(Bond bond, Bond bondLoaded)
         {
             bool result = false;
-            if (bondLoaded[BondsColumnNames.Status] != bond.Status)
+            if (bondLoaded.Status != bond.Status)
             {
-                bond.Status = bondLoaded[BondsColumnNames.Status];
+                bond.Status = bondLoaded.Status;
                 result = true;
             }
-            var accruedInt = NullableValue.TryDoubleParse(bondLoaded[BondsColumnNames.AccruedInt]);
-            if (accruedInt != bond.AccruedInt)
+            if (bondLoaded.AccruedInt != bond.AccruedInt)
             {
-                bond.AccruedInt = accruedInt;
+                bond.AccruedInt = bondLoaded.AccruedInt;
                 result = true;
             }
-            var issueSize = NullableValue.TryLongParse(bondLoaded[BondsColumnNames.IssueSize]);
-            if (issueSize != bond.IssueSize)
+            if (bondLoaded.IssueSize != bond.IssueSize)
             {
-                bond.IssueSize = issueSize;
+                bond.IssueSize = bondLoaded.IssueSize;
                 result = true;
             }
-            var couponValue = NullableValue.TryDoubleParse(bondLoaded[BondsColumnNames.CouponValue]);
-            if (couponValue != bond.CouponValue)
+            if (bondLoaded.CouponValue != bond.CouponValue)
             {
-                bond.CouponValue = couponValue;
+                bond.CouponValue = bondLoaded.CouponValue;
                 result = true;
             }
-            var couponPercent = NullableValue.TryDoubleParse(bondLoaded[BondsColumnNames.CouponPercent]);
-            if (couponPercent != bond.CouponPercent)
+            if (bondLoaded.CouponPercent != bond.CouponPercent)
             {
-                bond.CouponPercent = couponPercent;
+                bond.CouponPercent = bondLoaded.CouponPercent;
                 result = true;
             }
 

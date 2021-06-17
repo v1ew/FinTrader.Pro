@@ -21,6 +21,8 @@ namespace FinTrader.Pro.Contracts.Bonds
         /// </summary>
         public int AmountToBye { get; set; }
 
+        public double Yield { get; set; }
+        
         /// <summary>
         /// Сумма
         /// </summary>

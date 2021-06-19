@@ -362,7 +362,7 @@ namespace FinTrader.Pro.Bonds
             List<TradeDate> newDates = new List<TradeDate>();
             
             var last5Dates = await GetLastFiveTradeDatesAsync();
-            foreach (var date in last5Dates.OrderBy(d => d.Date))
+            foreach (var date in last5Dates)
             {
                 if (!traderRepository.TradeDates.Any(d => d.Date.CompareTo(date) == 0))
                 {
@@ -372,7 +372,7 @@ namespace FinTrader.Pro.Bonds
 
             if (newDates.Any())
             {
-                await traderRepository.AddTradeDatesAsync(newDates.ToArray());
+                await traderRepository.AddTradeDatesAsync(newDates.OrderBy(d => d.Date).ToArray());
             }
             
             if (traderRepository.TradeDates.Any())
@@ -657,6 +657,12 @@ namespace FinTrader.Pro.Bonds
             if (bondLoaded.CouponPercent != bond.CouponPercent)
             {
                 bond.CouponPercent = bondLoaded.CouponPercent;
+                result = true;
+            }
+            if ((bond.NextCoupon.HasValue && bondLoaded.NextCoupon.HasValue && bondLoaded.NextCoupon.Value.CompareTo(bond.NextCoupon.Value) != 0)
+                || (!bond.NextCoupon.HasValue && bondLoaded.NextCoupon.HasValue))
+            {
+                bond.NextCoupon = bondLoaded.NextCoupon;
                 result = true;
             }
 

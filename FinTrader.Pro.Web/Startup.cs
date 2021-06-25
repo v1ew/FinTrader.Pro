@@ -42,7 +42,12 @@ namespace FinTrader.Pro.Web
                 .AddIssBonds()
                 .AddScoped<IBondsService, BondsService>()
                 .AddControllersWithViews()
-                .AddNewtonsoftJson(opts => opts.SerializerSettings.Converters.Add(new StringEnumConverter())); ;
+                .AddNewtonsoftJson(opts => opts.SerializerSettings.Converters.Add(new StringEnumConverter()));
+			// In production, the Angular files will be served from this directory
+			services.AddSpaStaticFiles(configuration =>
+			{
+				configuration.RootPath = "ClientApp/dist/FinTraderPro";
+			});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +65,10 @@ namespace FinTrader.Pro.Web
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
 
             app.UseRouting();
 
@@ -73,17 +82,18 @@ namespace FinTrader.Pro.Web
             });
 
             app.UseSpa(spa => {
-                //spa.Options.SourcePath = "../src/ClientApp";
-                //spa.UseAngularCliServer("start");
-                string strategy = Configuration.GetValue<string>("DevTools:ConnectionStrategy");
-                if (strategy == "proxy")
+                if (env.IsDevelopment())
                 {
-                    spa.UseProxyToSpaDevelopmentServer("http://127.0.0.1:4200");
-                }
-                else
-                {
-                    spa.Options.SourcePath = "../ClientApp";
-                    spa.UseAngularCliServer("start");
+					string strategy = Configuration.GetValue<string>("DevTools:ConnectionStrategy");
+					if (strategy == "proxy")
+					{
+						spa.UseProxyToSpaDevelopmentServer("http://127.0.0.1:4200");
+					}
+					else
+					{
+						spa.Options.SourcePath = "ClientApp";
+						spa.UseAngularCliServer("start");
+					}
                 }
             });
         }

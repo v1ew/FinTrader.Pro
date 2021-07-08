@@ -1,4 +1,4 @@
-﻿using FinTrader.Pro.DB.Models;
+﻿using System;
 using FinTrader.Pro.Iss;
 using FinTrader.Pro.Iss.Columns;
 using System.Threading.Tasks;
@@ -25,41 +25,127 @@ namespace FinTrader.Pro.Bonds
                 { "iss.meta", "off" },
                 { "iss.df", "%d-%m-%Y" },
                 { "iss.tf", "%H:%M:%S" },
-                { "securities.columns", "SECID,BOARDID,SHORTNAME,ISIN,FACEUNIT,CURRENCYID,COUPONVALUE,NEXTCOUPON,COUPONPERCENT,LOTSIZE,LOTVALUE,FACEVALUE,MATDATE,COUPONPERIOD,ISSUESIZE,REGNUMBER,OFFERDATE,STATUS,SECTYPE,SECNAME,LATNAME" }
+                { "security_collection", "stock_bonds_all" },
+                { "securities.columns", "SECID,BOARDID,SHORTNAME,ISIN,FACEUNIT,PREVWAPRICE,YIELDATPREVWAPRICE,CURRENCYID,COUPONVALUE,COUPONPERCENT,ACCRUEDINT,NEXTCOUPON,LOTSIZE,LOTVALUE,FACEVALUE,MATDATE,COUPONPERIOD,ISSUESIZE,OFFERDATE,STATUS,SECTYPE,SECNAME" }
             });
 
-            var data = bonds.Securities.Data.Where(b => b[BondsColumnNames.FaceUnit] == "SUR" && b[BondsColumnNames.CurrencyId] == "SUR").OrderByDescending(b => b[BondsColumnNames.CouponPercent]);
-            //data = data.Where();
-
-            return data;
+            return bonds.Securities.Data;
         }
 
-        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondsMarketDataAsync()
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondsDurationsAsync(DateTime date)
         {
-            var request = new MarketSecuritiesListRequest(issClient);
-            var bonds = await request.FetchAsync("stock", "bonds", new Dictionary<string, string> {
-                { "iss.only", "marketdata" },
+            var request = new BondsDurationsRequest(issClient);
+            var bonds = await request.FetchAsync(new Dictionary<string, string> {
+                { "lang", "ru" },
                 { "iss.meta", "off" },
-                { "iss.df", "%d-%m-%Y" },
-                { "iss.tf", "%H:%M:%S" },
-                { "marketdata.columns", "SECID,BOARDID,NUMTRADES,VOLTODAY,DURATION,MARKETPRICETODAY,YIELDTOOFFER,YIELDLASTCOUPON,VALTODAY_RUR,LCURRENTPRICE" }
+                { "date", date.ToString("yyyy-MM-dd") },
+                { "durations.columns", "secid,effectiveyield,duration" }
             });
 
-            var data = bonds.Securities.Data.Where(b => b[BondsColumnNames.FaceUnit] == "SUR" && b[BondsColumnNames.CurrencyId] == "SUR").OrderByDescending(b => b[BondsColumnNames.CouponPercent]);
-            //data = data.Where();
-
-            return data;
+            return bonds.Durations.Data;
         }
 
+        /// <summary>
+        /// Возвращает первый попавшийся бонд (ОФЗ)
+        /// </summary>
+        /// <returns>Строка SecId найденного бонда, либо пустая строка</returns>
+        public async Task<string> LoadAnyBondAsync()
+        {
+            var requestedField = "SECID";
+            var request = new CollectionSecuritiesListRequest(issClient);
+            
+            var bonds = await request.FetchAsync("stock_bonds", "stock_bonds_ofz_all", new Dictionary<string, string>
+            {
+                {"iss.meta", "off"},
+                {"securities.columns", requestedField}
+            });
+
+            return bonds.Securities.Data?.FirstOrDefault()?[requestedField] ?? string.Empty;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondHistoryDatesAsync(string secId, DateTime fromDate)
+        {
+            var request = new SecurityHistoryRequest(issClient);
+            var history = await request.FetchAsync("stock", "bonds", "TQCB", secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "from", fromDate.ToString("yyyy-MM-dd") },
+                { "history.columns", "TRADEDATE" }
+            });
+
+            return history.History.Data;
+        }
+        
+        public async Task<Dictionary<string, string>> LoadDatesAsync()
+        {
+            var request = new DatesRangeRequest(issClient);
+            var dates = await request.FetchAsync(new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+            });
+
+            return dates.Dates.Data.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondHistoryAsync(string secId, DateTime fromDate)
+        {
+            var request = new SecurityHistoryRequest(issClient);
+            var history = await request.FetchAsync("stock", "bonds", secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "from", fromDate.ToString("yyyy-MM-dd") },
+                { "history.columns", "TRADEDATE,VALUE,DURATION,YIELDATWAP,WAPRICE" }
+            });
+
+            return history.History.Data;
+        }
+        
         public async Task<IEnumerable<Dictionary<string, string>>> LoadCouponsAsync(string secId)
         {
             var request = new BondCouponsRequest(issClient);
-            var coupons = await request.FetchAsync(secId, new Dictionary<string, string>
+            var bondization = await request.FetchAsync(secId, new Dictionary<string, string>
             {
-                { "iss.meta", "off" }
+                { "iss.meta", "off" },
+                { "iss.only", "coupons" },
+                { "limit", "200" }
             });
-            // TODO: return offers
-            return coupons.Coupons.Data;
+            return bondization.Coupons.Data;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadAmortizationsAsync(string secId)
+        {
+            var request = new BondCouponsRequest(issClient);
+            var bondization = await request.FetchAsync(secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "iss.only", "amortizations" },
+                { "limit", "200" }
+            });
+            return bondization.Amortizations.Data;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadOffersAsync(string secId)
+        {
+            var request = new BondCouponsRequest(issClient);
+            var bondization = await request.FetchAsync(secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "iss.only", "offers" },
+                { "limit", "200" }
+            });
+            return bondization.Offers.Data;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, string>>> LoadBondsInfoAsync(string secId)
+        {
+            var request = new SecurityDefinitionRequest(issClient);
+            var bondsInfo = await request.FetchAsync(secId, new Dictionary<string, string>
+            {
+                { "iss.meta", "off" },
+                { "iss.only", "description" }
+            });
+
+            return bondsInfo.Description.Data;
         }
     }
 }

@@ -16,7 +16,6 @@ namespace FinTrader.Pro.Web.Controllers
     public class BondsController : Controller
     {
         private readonly ILogger<HomeController> logger;
-        //private readonly IFinTraderRepository finTraderRepository;
         private readonly IIssBondsRepository issBondsRepository;
         private readonly IBondsService bondsService;
 
@@ -30,7 +29,19 @@ namespace FinTrader.Pro.Web.Controllers
         [HttpGet("update")]
         public async Task<IActionResult> UpdateStorage()
         {
-            await bondsService.UpdateStorageAsync();
+            await bondsService.UpdateBondsAsync();
+            await bondsService.DiscardWrongBondsAsync();
+            await bondsService.UpdateCouponsAsync();
+            await bondsService.CheckCouponsAsync();
+            await bondsService.UpdateBondsDurationAsync();
+            await bondsService.UpdateBondsValueAsync();
+            return Ok("Ok!");
+        }
+
+        [HttpGet("update-coupons")]
+        public async Task<IActionResult> UpdateCouponsStorage()
+        {
+            await bondsService.UpdateCouponsAsync();
             return Ok("Ok!");
         }
 
@@ -38,6 +49,22 @@ namespace FinTrader.Pro.Web.Controllers
         public async Task<IActionResult> FilterStorage()
         {
             await bondsService.DiscardWrongBondsAsync();
+            await bondsService.CheckCouponsAsync();
+            return Ok("Ok!");
+        }
+
+        [HttpGet("load-date")]
+        public async Task<IActionResult> LoadDate()
+        {
+            await bondsService.UpdateTradeDateAsync();
+            return Ok("Ok!");
+        }
+        
+        [HttpGet("update-history")]
+        public async Task<IActionResult> LoadHistory()
+        {
+            await bondsService.UpdateBondsDurationAsync();
+            await bondsService.UpdateBondsValueAsync();
             return Ok("Ok!");
         }
     }

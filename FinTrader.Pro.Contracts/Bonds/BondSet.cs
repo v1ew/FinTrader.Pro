@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using FinTrader.Pro.Contracts.Bonds;
 
-namespace FinTrader.Pro.Contracts
+namespace FinTrader.Pro.Contracts.Bonds
 {
     /// <summary>
     /// Подборка облигаций с купонным доходом

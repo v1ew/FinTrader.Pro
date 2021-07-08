@@ -21,11 +21,17 @@ namespace FinTrader.Pro.Contracts.Bonds
         /// </summary>
         public int AmountToBye { get; set; }
 
+        public double Yield { get; set; }
+        
         /// <summary>
         /// Сумма
         /// </summary>
         public double Sum { get; set; }
         
         public string Isin { get; set; }
+        
+        public double Cost { get; set; }
+        
+        public double K { get; set; }
     }
 }

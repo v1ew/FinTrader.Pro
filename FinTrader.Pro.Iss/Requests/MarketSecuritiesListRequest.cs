@@ -3,19 +3,14 @@ using System.Threading.Tasks;
 
 namespace FinTrader.Pro.Iss.Requests
 {
-    public class MarketSecuritiesListRequest
+    public class MarketSecuritiesListRequest : RequestBase
     {
-        private IIssClient issClient;
-
-        public MarketSecuritiesListRequest(IIssClient client)
-        {
-            issClient = client;
-        }
+        public MarketSecuritiesListRequest(IIssClient client) : base(client) { }
 
         public async Task<MarketSecuritiesListResponse> FetchAsync(string engine, string market, IDictionary<string, string> args)
         {
             var url = $"iss/engines/{engine}/markets/{market}/securities.json";
-            return await issClient.GetAsync<MarketSecuritiesListResponse>(url, args);
+            return await IssClient.GetAsync<MarketSecuritiesListResponse>(url, args);
         }
     }
 }

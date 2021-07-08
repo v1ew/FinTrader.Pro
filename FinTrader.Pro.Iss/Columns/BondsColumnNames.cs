@@ -2,7 +2,7 @@
 {
     public static class BondsColumnNames
     {
-        public const string AccRuedInt = "ACCRUEDINT";
+        public const string AccruedInt = "ACCRUEDINT";
         public const string BoardId = "BOARDID";
         public const string BoardName = "BOARDNAME";
         public const string CouponPercent = "COUPONPERCENT";
@@ -29,6 +29,11 @@
         public const string ShortName = "SHORTNAME";
         public const string Status = "STATUS";
         public const string YieldAtPrevWaPrice = "YIELDATPREVWAPRICE";
-        //"PREVLEGALCLOSEPRICE", "PREVADMITTEDQUOTE", "PREVDATE", "", "REMARKS", "MARKETCODE", "INSTRID", "SECTORID", "MINSTEP", , "BUYBACKPRICE", "BUYBACKDATE", "", "", "", "ISSUESIZEPLACED", "LISTLEVEL",  "SETTLEDATE";
+        public const string Duration = "DURATION";
+        public const string VolToday = "VOLTODAY";
+        public const string ValToday = "VALTODAY";
+        public const string IssueSizePlaced = "ISSUESIZEPLACED";
+        
+        //"PREVLEGALCLOSEPRICE", "PREVADMITTEDQUOTE", "PREVDATE", "", "REMARKS", "MARKETCODE", "INSTRID", "SECTORID", "MINSTEP", , "BUYBACKPRICE", "BUYBACKDATE", "", "", "", "", "LISTLEVEL",  "SETTLEDATE";
     }
 }

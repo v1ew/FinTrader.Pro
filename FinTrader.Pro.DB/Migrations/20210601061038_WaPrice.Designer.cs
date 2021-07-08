@@ -3,15 +3,17 @@ using System;
 using FinTrader.Pro.DB.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FinTrader.Pro.DB.Migrations
 {
     [DbContext(typeof(FinTraderDataContext))]
-    partial class FinTraderDataContextModelSnapshot : ModelSnapshot
+    [Migration("20210601061038_WaPrice")]
+    partial class WaPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,9 +89,6 @@ namespace FinTrader.Pro.DB.Migrations
                     b.Property<double?>("ModifiedDuration")
                         .HasColumnType("double precision");
 
-                    b.Property<DateTime?>("NextCoupon")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<DateTime?>("OfferDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -115,6 +114,9 @@ namespace FinTrader.Pro.DB.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<double?>("ValueAvg")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("WaPrice")
                         .HasColumnType("double precision");
 
                     b.Property<double?>("Yield")

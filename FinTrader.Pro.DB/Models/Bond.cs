@@ -1,105 +1,155 @@
-﻿using FinTrader.Pro.DB.Converters;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 
 namespace FinTrader.Pro.DB.Models
 {
-    [JsonConverter(typeof(JsonBondConverter))]
     public class Bond
     {
         /// <summary>
         /// Код ценной бумаги
         /// </summary>
         public string SecId { get; set; }
+        
         public string BoardId { get; set; }
+        
         /// <summary>
         /// Отмечаем неподходящие бумаги
         /// </summary>
         public bool Discarded { get; set; } = false;
-        public string Name { get; set; }
+        
         public string ShortName { get; set; }
+        
+        /// <summary>
+        /// Средневзвешенная цена предыдущего дня, % к номиналу
+        /// </summary>
         public double? PrevWaPrice { get; set; }
+        
+        /// <summary>
+        /// Доходность по оценке пред. дня
+        /// </summary>
         public double? YieldAtPrevWaPrice { get; set; }
+        
+        /// <summary>
+        /// Дата окончания купона
+        /// </summary>
+        public DateTime? NextCoupon { get; set; }
+        
         /// <summary>
         /// Сумма купона, в валюте номинала
         /// </summary>
         public double? CouponValue { get; set; }
-        public DateTime? NextCoupon { get; set; }
-        public double? AccruedInt { get; set; }
-        public double? PrevPrice { get; set; }
-        public int? LotSize { get; set; }
+        
         /// <summary>
-        /// Первоначальная номинальная стоимость
+        /// НКД
         /// </summary>
-        public double? InitialFaceValue { get; set; }
+        public double? AccruedInt { get; set; }
+
+        public int? LotSize { get; set; }
+        
         /// <summary>
         /// Номинальная стоимость
         /// </summary>
         public double? FaceValue { get; set; }
-        public string BoardName { get; set; }
+        
         public string Status { get; set; }
+        
         /// <summary>
         /// Дата погашения
         /// </summary>
         public DateTime? MatDate { get; set; }
+
         public int? Decimals { get; set; }
-        /// <summary>
-        /// Периодичность выплаты купона в год
-        /// </summary>
-        public int? CouponFrequency { get; set; }
+        
         public int? CouponPeriod { get; set; }
+        
         /// <summary>
         /// Объем выпуска
         /// </summary>
         public long? IssueSize { get; set; }
-        public double? PrevLegalClosePrice { get; set; }
-        public double? PrevAdmittedQuote { get; set; }
+
+        /// <summary>
+        /// Дата последних торгов
+        /// </summary>
         public DateTime? PrevDate { get; set; }
+        
+        /// <summary>
+        /// Наименование бумаги
+        /// </summary>
         public string SecName { get; set; }
-        public string Remarks { get; set; }
-        public string MarketCode { get; set; }
-        public string InstrId { get; set; }
-        public string SectorId { get; set; }
-        public double? MinStep { get; set; }
+        
+        /// <summary>
+        /// Валюта номинала
+        /// </summary>
         public string FaceUnit { get; set; }
+        
+        /// <summary>
+        /// Цена оферты
+        /// </summary>
         public double? BuyBackPrice { get; set; }
+        
+        /// <summary>
+        /// Дата, к которой рассчитывается доходность
+        /// (если данное поле не заполнено, то "Доходность посл.сделки" рассчитывается к Дате погашения)
+        /// </summary>
         public DateTime? BuyBackDate { get; set; }
+        
         public string Isin { get; set; }
-        public string LatName { get; set; }
-        public string RegNumber { get; set; }
+        
+        /// <summary>
+        /// Сопр. валюта инструмента
+        /// </summary>
         public string CurrencyId { get; set; }
-        public long? IssueSizePlaced { get; set; }
-        /// <summary>
-        /// Уровень листинга
-        /// </summary>
-        public int? ListLevel { get; set; }
-        /// <summary>
-        /// Вид/категория ценной бумаги
-        /// </summary>
-        public string TypeName { get; set; }
+        
         public string SecType { get; set; }
+        
         /// <summary>
         /// Ставка купона, %
         /// </summary>
         public double? CouponPercent { get; set; }
+        
         /// <summary>
-        /// Возможен досрочный выкуп
+        /// Дата оферты
         /// </summary>
-        public bool? EarlyRepayment { get; set; }
         public DateTime? OfferDate { get; set; }
-        public DateTime? IssueDate { get; set; }
+        
+        /// <summary>
+        /// Номинальная стоимость лота, в валюте номинала
+        /// </summary>
         public double? LotValue { get; set; }
-        /// <summary>
-        /// Дней до погашения
-        /// </summary>
-        public int? DaysToRedemption { get; set; }
-        /// <summary>
-        /// Бумаги для квалифицированных инвесторов
-        /// </summary>
-        public bool? IsQualifiedInvestors { get; set; }
+
         /// <summary>
         /// Код эмитента
         /// </summary>
         public int? EmitterId { get; set; }
+        
+        /// <summary>
+        /// Дюрация в днях
+        /// </summary>
+        public double? Duration { get; set; }
+        
+        /// <summary>
+        /// Вычисляется по формуле:
+        /// Дюрация / ((1 + Доходность / 100) * 365) 
+        /// </summary>
+        public double? ModifiedDuration { get; set; }
+        
+        /// <summary>
+        /// Доходность
+        /// </summary>
+        public double? Yield { get; set; }
+
+        /// <summary>
+        /// Объем заключенных сделок в среднем за 5 дней
+        /// </summary>
+        public double? ValueAvg { get; set; }
+        
+        /// <summary>
+        /// Комментарий, причина дисквалификации облигации
+        /// </summary>
+        public string Comment { get; set; }
+        
+        /// <summary>
+        /// Время последнего изменения записи
+        /// </summary>
+        public DateTime Updated { get; set; }
     }
 }

@@ -1,0 +1,22 @@
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+ul {
+  display: inline-block;
+  list-style: none;
+}
+
+a {
+  color: #333;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #666;
+}
+
+.btn-link {
+  margin-right: 10px;
+}

@@ -57,23 +57,26 @@ namespace FinTrader.Pro.Bonds
             switch (filter.BondsClass)
             {
                 case BondClass.MostLiquid:
-                    bonds = bonds.OrderByDescending(b => b.ValueAvg);
+                    bonds = bonds.OrderByDescending(b => b.ValueAvg).ThenByDescending(b => b.CouponPercent);
                     break;
                 case BondClass.MostProfitable:
-                    bonds = bonds.OrderByDescending(b => b.CouponPercent);
+                    bonds = bonds.OrderByDescending(b => b.CouponPercent).ThenByDescending(b => b.ValueAvg);
                     break;
                 case BondClass.ByRepaymentDate:
                     if (filter.RepaymentDate.HasValue)
                     {
-                        bonds = bonds.OrderByDescending(b => b.MatDate).Where(b => b.MatDate.Value.CompareTo(filter.RepaymentDate.Value) <= 0);
+                        bonds = bonds.Where(b => b.MatDate.Value.CompareTo(filter.RepaymentDate.Value) <= 0);
                     }
+                    //TODO: По дате погашения - надо учитывать дату оферты
+
+                    bonds = bonds.OrderByDescending(b => b.MatDate).ThenByDescending(b => b.CouponPercent);
                     break;
                 case BondClass.FarthestRepaynment:
-                    bonds = bonds.OrderByDescending(b => b.MatDate);
+                    bonds = bonds.OrderByDescending(b => b.MatDate).ThenByDescending(b => b.CouponPercent);
                     break;
             }
 
-            var bondsSel = Runner.Select(bonds.OrderByDescending(b => b.CouponPercent));
+            var bondsSel = Runner.Select(bonds);
             var selectedBonds = await bonds
                 .Where(b => bondsSel.BondsList.Keys.Contains(b.Isin))
                 .Select(b => new SelectedBond
@@ -377,9 +380,8 @@ namespace FinTrader.Pro.Bonds
             
             if (traderRepository.TradeDates.Any())
             {
-                var lastId = await traderRepository.TradeDates.MaxAsync(d => d.Id);
-                savedDate = await traderRepository.TradeDates.FirstOrDefaultAsync(d => d.Id == lastId);
-                result = savedDate.Date;
+                var lastDate = await traderRepository.TradeDates.MaxAsync(d => d.Date);
+                result = lastDate;
             }
 
             return result;

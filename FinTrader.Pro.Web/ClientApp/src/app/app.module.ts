@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FaqPageComponent } from './pages/faq-page/faq-page.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { MatCardModule } from '@angular/material/card';
     MatToolbarModule,
     MatIconModule,
     MatExpansionModule,
-	MatCardModule
+	  MatCardModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

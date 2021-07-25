@@ -9,6 +9,7 @@ export class Repository {
   //filter: BondsPickerFilter;
   private prtfl: Portfolio = null;
   private portfolioRequested: boolean = false;
+  private filterSent: BondsPickerFilter = null;
 
   constructor(private http: HttpClient) {
     this.portfolioRequested = false;
@@ -18,6 +19,7 @@ export class Repository {
     this.http.post<Portfolio>("/api/bondsets", filter)
       .subscribe(p => this.prtfl = p);
     this.portfolioRequested = true;
+    this.filterSent = filter;
   }
 
   //TODO: remove this
@@ -31,5 +33,9 @@ export class Repository {
 
   get formSent(): boolean {
     return this.portfolioRequested;
+  }
+
+  get savedFilter(): BondsPickerFilter {
+    return this.filterSent;
   }
 }

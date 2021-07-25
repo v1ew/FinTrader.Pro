@@ -28,7 +28,11 @@ export class BondsPickerFormComponent implements OnInit {
   ];
 
   constructor(private router: Router, private repo: Repository) {
-    this.bondsPicker = new BondsPickerFilter(false, false, "MostLiquid", null, false, "InvestmentAmount", 10000, false, false, false);
+    if (this.repo.savedFilter == null) {
+      this.bondsPicker = new BondsPickerFilter(false, false, "MostLiquid", null, false, "InvestmentAmount", 10000, false, false, false);
+    } else {
+      this.bondsPicker = this.repo.savedFilter;
+    }
   }
 
   ngOnInit(): void {

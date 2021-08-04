@@ -9,6 +9,8 @@ using FinTrader.Pro.DB.Repositories;
 using FinTrader.Pro.Iss;
 using FinTrader.Pro.Bonds.Extensions;
 using FinTrader.Pro.Bonds;
+using FinTrader.Pro.Web.Schedule;
+using FluentScheduler;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Newtonsoft.Json.Converters;
@@ -96,6 +98,8 @@ namespace FinTrader.Pro.Web
 					}
                 }
             });
+            
+            JobManager.Initialize(new UpdateJobRegistry(app.ApplicationServices, Configuration));
         }
     }
 }

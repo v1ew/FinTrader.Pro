@@ -9,7 +9,7 @@ h3 {
 
 .bonds-picker-card {
   min-width: 120px;
-  width: 50%;
+  width: 90%;
   margin: 20px auto;
 }
 
@@ -34,6 +34,7 @@ h3 {
 
 @media screen and (max-width: 780px){
   .bonds-picker-card {
-    width: 100%;
+	margin: 10px auto;
+    width: 95%;
   }
 }

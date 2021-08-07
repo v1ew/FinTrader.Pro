@@ -19,9 +19,9 @@ namespace FinTrader.Pro.Web.Controllers
         private readonly IIssBondsRepository issBondsRepository;
         private readonly IBondsService bondsService;
 
-        public BondsController(ILogger<HomeController> logger, IIssBondsRepository bondsRepo, IBondsService bondsServ)
+        public BondsController(ILoggerFactory loggerFactory, IIssBondsRepository bondsRepo, IBondsService bondsServ)
         {
-            this.logger = logger;
+            this.logger = loggerFactory.CreateLogger<HomeController>();
             issBondsRepository = bondsRepo;
             bondsService = bondsServ;
         }

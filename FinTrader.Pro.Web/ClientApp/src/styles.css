@@ -2,3 +2,29 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+  padding: 0 2rem;
+}
+
+.main-card {
+  min-width: 120px;
+  width: 90%;
+  margin: 20px auto;
+}
+
+@media screen and (max-width: 780px){
+  .main-card {
+    width: 95%;
+  }
+  .mat-expansion-panel-header {
+    height: 60px;
+  }
+  
+  .container {
+	padding: 0 1rem;  
+  }
+}

@@ -1,5 +1,5 @@
 <form #bondsPickerForm="ngForm" novalidate (ngSubmit)="onSubmit()">
-  <mat-card class="bonds-picker-card">
+  <mat-card class="main-card">
     <mat-card-header>
       <mat-card-title>Собрать портфель из облигаций</mat-card-title>
     </mat-card-header>
@@ -28,13 +28,8 @@
 
       <div class="row">
         <div class="col">
-          <h3>Отобрать облигации:</h3>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width" appearance="fill">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Отобрать облигации:</mat-label>
             <mat-select name="bondsClass" [(ngModel)]="bondsPicker.bondsClass">
               <mat-option *ngFor="let bc of bondClasses" [value]="bc.value">{{bc.text}}</mat-option>
             </mat-select>
@@ -46,7 +41,9 @@
         <div class="col">
           <mat-form-field class="full-width" appearance="outline">
             <mat-label>Введите дату</mat-label>
-            <input matInput type="date" name="repaymentDate" [(ngModel)]="bondsPicker.repaymentDate">
+            <input matInput [matDatepicker]="repDatepicker" name="repaymentDate" [(ngModel)]="bondsPicker.repaymentDate">
+            <mat-datepicker-toggle [for]="repDatepicker" matSuffix></mat-datepicker-toggle>
+            <mat-datepicker #repDatepicker></mat-datepicker>
           </mat-form-field>
         </div>
       </div>
@@ -61,13 +58,8 @@
 
       <div class="row">
         <div class="col">
-          <h3>Рассчитать портфель:</h3>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width" appearance="fill">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Рассчитать портфель:</mat-label>
             <mat-select name="calculationMethod" [(ngModel)]="bondsPicker.calculationMethod">
               <mat-option *ngFor="let cm of calculationMethods" [value]="cm.value">{{cm.text}}</mat-option>
             </mat-select>
@@ -114,13 +106,10 @@
           </mat-checkbox>
         </div>
       </div>
-
-      <div class="row">
-        <div class="col">
-          <button mat-raised-button color="primary" type="submit">Рассчитать</button>
-        </div>
-      </div>
     </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-raised-button color="primary" type="submit">Рассчитать</button>
+    </mat-card-actions>
   </mat-card>
 </form>
 

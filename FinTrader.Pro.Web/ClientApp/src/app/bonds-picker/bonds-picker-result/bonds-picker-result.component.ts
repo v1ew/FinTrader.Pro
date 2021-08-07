@@ -2,9 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { Router } from '@angular/router';
 
 import { Repository } from "../../models/repository";
-import { BondSet } from "../../models/bond-set.model";
-import { BondSelected } from "../../models/bond-selected.model";
-import { CouponSelected } from "../../models/coupon-selected.model";
 import {Portfolio} from "../../models/portfolio.model";
 
 @Component({
@@ -13,8 +10,6 @@ import {Portfolio} from "../../models/portfolio.model";
   styleUrls: ['./bonds-picker-result.component.css']
 })
 export class BondsPickerResultComponent implements OnInit {
-  displayedBondsColumns: string[] = ["bondName", "matDate", "couponValue", "amountToBye", "sum"];
-  displayedCouponsColumns: string[] = ["cpnNum", "cpnDate", "cpnBondName", "cpnSum", "cpnComment"];
 
   constructor(private readonly router: Router, private readonly repo: Repository) {
   }
@@ -26,15 +21,8 @@ export class BondsPickerResultComponent implements OnInit {
     }
   }
 
-  get portfolio(): Portfolio {
-    return this.repo.portfolio;
+  get portfolios(): Portfolio[] {
+    return this.repo.portfolios;
   }
 
-  get bondsSource(): BondSelected[] {
-    return this.repo.portfolio?.bondSets[0].bonds;
-  }
-
-  get couponsSource(): CouponSelected[] {
-    return this.repo.portfolio?.bondSets[0].coupons;
-  }
 }

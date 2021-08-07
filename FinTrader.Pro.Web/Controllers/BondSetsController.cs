@@ -29,15 +29,17 @@ namespace FinTrader.Pro.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<Portfolio> GetBondSet([FromBody] BondsPickerParams picker)
+        public async Task<Portfolio[]> GetBondSet([FromBody] BondsPickerParams picker)
         {
             if (!(picker.IsIncludedCorporate || picker.IsIncludedFederal))
             {
-                return new Portfolio
-                {
-                    BondSets = new List<BondSet> {
-                        new BondSet {Bonds = new SelectedBond[] {}},
-                        new BondSet {Bonds = new SelectedBond[] {}},
+                return new [] { 
+                    new Portfolio
+                    {
+                        BondSets = new List<BondSet> {
+                            new BondSet {Bonds = new SelectedBond[] {}},
+                            new BondSet {Bonds = new SelectedBond[] {}},
+                        }
                     }
                 };
             }

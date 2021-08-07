@@ -48,11 +48,13 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { Repository } from '../models/repository';
 import { BondsPickerFormComponent } from './bonds-picker-form/bonds-picker-form.component';
 import { BondsPickerResultComponent } from './bonds-picker-result/bonds-picker-result.component';
+import { PortfolioTabsComponent } from './portfolio-tabs/portfolio-tabs.component';
 
 @NgModule({
   declarations: [
     BondsPickerFormComponent,
     BondsPickerResultComponent,
+    PortfolioTabsComponent,
   ],
   providers: [
     Repository

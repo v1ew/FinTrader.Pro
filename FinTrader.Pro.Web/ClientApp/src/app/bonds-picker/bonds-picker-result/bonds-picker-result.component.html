@@ -1,77 +1,9 @@
-<h2>Мы подобрали портфель:</h2>
-<ul class="bonds-req-results">
-  <li><span>Портфель включает:</span> {{portfolio?.includes}}</li>
-  <li><span>Затраты на создание портфеля:</span> {{portfolio?.sum | number: '1.2-2'}} руб.</li>
-  <li><span>В среднем этот портфель будет приносить:</span> {{portfolio?.pay}} руб.</li>
-  <li><span>Доходность портфеля к погашению составит:</span> {{portfolio?.yields | number: '1.2-2'}} %</li>
-  <li><span>Этот портфель полностью выйдет в деньги:</span> {{portfolio?.matDate | date:'dd.MM.yyyy'}}</li>
-</ul>
-<mat-tab-group>
-  <mat-tab label="Портфель">
+<h2 *ngIf="portfolios != null && portfolios.length == 1">Мы подобрали портфель:</h2>
+<h2 *ngIf="portfolios != null && portfolios.length == 2">Мы подобрали портфели:</h2>
 
-    <mat-table [dataSource]="bondsSource" class="mat-elevation-z8">
-      <!-- Position Column -->
-      <ng-container matColumnDef="bondName">
-        <mat-header-cell *matHeaderCellDef>Название облигации</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.shortName}} </mat-cell>
-      </ng-container>
+<app-portfolio-tabs [portfolio]="portfolios[0]" *ngIf="portfolios != null && portfolios.length == 1"></app-portfolio-tabs>
 
-      <ng-container matColumnDef="matDate">
-        <mat-header-cell *matHeaderCellDef>Дата погашения</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.matDate | date:'dd.MM.yyyy'}} </mat-cell>
-      </ng-container>
+<app-portfolio-tabs [portfolio]="portfolios[0]" [order]="1" *ngIf="portfolios != null && portfolios.length == 2"></app-portfolio-tabs>
 
-      <ng-container matColumnDef="couponValue">
-        <mat-header-cell *matHeaderCellDef>Размер купона</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.couponValue}} </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="amountToBye">
-        <mat-header-cell *matHeaderCellDef>Купить штук</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.amountToBye}} </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="sum">
-        <mat-header-cell *matHeaderCellDef>Сумма покупки</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.sum | number: '1.2-2'}} </mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedBondsColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedBondsColumns;"></mat-row>
-    </mat-table>
-
-  </mat-tab>
-  <mat-tab label="Детализация выплат">
-
-    <mat-table [dataSource]="couponsSource" class="mat-elevation-z8">
-      <ng-container matColumnDef="cpnNum">
-        <mat-header-cell *matHeaderCellDef>№ платежа</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="cpnDate">
-        <mat-header-cell *matHeaderCellDef>Дата выплаты</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.date | date:'dd.MM.yyyy'}} </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="cpnBondName">
-        <mat-header-cell *matHeaderCellDef>Название облигации</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.shortName}} </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="cpnSum">
-        <mat-header-cell *matHeaderCellDef>Сумма выплаты</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.value | number: '1.2-2'}} </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="cpnComment">
-        <mat-header-cell *matHeaderCellDef>Комментарий</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.comment}} </mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedCouponsColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedCouponsColumns;"></mat-row>
-    </mat-table>
-  </mat-tab>
-</mat-tab-group>
+<app-portfolio-tabs [portfolio]="portfolios[1]" [order]="2" *ngIf="portfolios != null && portfolios.length == 2"></app-portfolio-tabs>
 

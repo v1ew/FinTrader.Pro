@@ -51,7 +51,7 @@ namespace FinTrader.Pro.Contracts
         /// <summary>
         /// Разделить сумму на два портфеля
         /// </summary>
-        [JsonProperty(PropertyName = "twoPortfolios")]
+        [JsonProperty(PropertyName = "isTwoPortfolios")]
         public bool TwoPortfolios { get; set; }
     }
 }

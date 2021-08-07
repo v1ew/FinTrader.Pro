@@ -9,7 +9,7 @@ namespace FinTrader.Pro.Bonds
 {
     public interface IBondsService
     {
-        Task<Portfolio> SelectBondsAsync(BondsPickerParams picker);
+        Task<Portfolio[]> SelectBondsAsync(BondsPickerParams picker);
 
         Task DiscardWrongBondsAsync();
 

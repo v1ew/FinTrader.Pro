@@ -34,7 +34,7 @@ namespace FinTrader.Pro.Bonds
             this.logger = logger;
         }
 
-        public async Task<Portfolio> SelectBondsAsync(BondsPickerParams filter)
+        public async Task<Portfolio[]> SelectBondsAsync(BondsPickerParams filter)
         {
             var oneYearPlus = DateTime.Now.AddYears(1).AddDays(1);
             var bonds = traderRepository.Bonds
@@ -134,8 +134,12 @@ namespace FinTrader.Pro.Bonds
                     Coupons = await GetCouponsAsync(selectedBonds.ToDictionary(b => b.Isin, b => b))
                 }
             );
-            
-            return result;
+
+            if (filter.TwoPortfolios)
+            {
+                return new Portfolio[] {result, result};
+            }
+            return new Portfolio[] {result};
         }
 
         /// <summary>
@@ -361,7 +365,6 @@ namespace FinTrader.Pro.Bonds
         public async Task<DateTime> UpdateTradeDateAsync()
         {
             var result = DateTime.Today.AddDays(-1);
-            TradeDate savedDate = null;
             List<TradeDate> newDates = new List<TradeDate>();
             
             var last5Dates = await GetLastFiveTradeDatesAsync();

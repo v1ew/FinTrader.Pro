@@ -13,7 +13,7 @@ namespace FinTrader.Pro.Web.Schedule
             NonReentrantAsDefault();
             Schedule(() => new UpdateJob(provider))
                 .WithName(nameof(UpdateJob))
-                .ToRunOnceAt(UpdateTimeHours, 11)
+                .ToRunOnceAt(UpdateTimeHours, 0)
                 .AndEvery(1)
                 .Days();
         }

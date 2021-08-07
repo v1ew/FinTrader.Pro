@@ -1,10 +1,10 @@
 <h2>Мы подобрали портфель:</h2>
 <ul class="bonds-req-results">
-  <li><span>Портфель включает:</span> {{portfolio.includes}}</li>
-  <li><span>Затраты на создание портфеля:</span> {{portfolio.sum}} руб.</li>
-  <li><span>В среднем этот портфель будет приносить:</span> {{portfolio.pay}} руб.</li>
-  <li><span>Доходность портфеля к погашению составит:</span> {{portfolio.yields}} %</li>
-  <li><span>Этот портфель полностью выйдет в деньги:</span> {{portfolio.matDate | date:'dd.MM.yyyy'}}</li>
+  <li><span>Портфель включает:</span> {{portfolio?.includes}}</li>
+  <li><span>Затраты на создание портфеля:</span> {{portfolio?.sum | number: '1.2-2'}} руб.</li>
+  <li><span>В среднем этот портфель будет приносить:</span> {{portfolio?.pay}} руб.</li>
+  <li><span>Доходность портфеля к погашению составит:</span> {{portfolio?.yields | number: '1.2-2'}} %</li>
+  <li><span>Этот портфель полностью выйдет в деньги:</span> {{portfolio?.matDate | date:'dd.MM.yyyy'}}</li>
 </ul>
 <mat-tab-group>
   <mat-tab label="Портфель">
@@ -33,7 +33,7 @@
 
       <ng-container matColumnDef="sum">
         <mat-header-cell *matHeaderCellDef>Сумма покупки</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.sum}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.sum | number: '1.2-2'}} </mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedBondsColumns"></mat-header-row>
@@ -61,7 +61,7 @@
 
       <ng-container matColumnDef="cpnSum">
         <mat-header-cell *matHeaderCellDef>Сумма выплаты</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.value}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.value | number: '1.2-2'}} </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="cpnComment">

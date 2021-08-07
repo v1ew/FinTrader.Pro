@@ -5,3 +5,11 @@ table {
 .bonds-req-results {
   list-style: none;
 }
+
+.bonds-req-results li {
+  font-weight: bold;
+}
+
+.bonds-req-results li span {
+  font-weight: normal;
+}

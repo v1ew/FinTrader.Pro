@@ -31,10 +31,10 @@ export class BondsPickerResultComponent implements OnInit {
   }
 
   get bondsSource(): BondSelected[] {
-    return this.repo.portfolio.bondSets[0].bonds;
+    return this.repo.portfolio?.bondSets[0].bonds;
   }
 
   get couponsSource(): CouponSelected[] {
-    return this.repo.portfolio.bondSets[0].coupons;
+    return this.repo.portfolio?.bondSets[0].coupons;
   }
 }

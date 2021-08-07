@@ -7,7 +7,7 @@ import { Portfolio } from './portfolio.model';
 @Injectable()
 export class Repository {
   //filter: BondsPickerFilter;
-  private prtfl: Portfolio = null;
+  private prtfls: Portfolio = null;
   private portfolioRequested: boolean = false;
   private filterSent: BondsPickerFilter = null;
 
@@ -17,7 +17,7 @@ export class Repository {
 
   getBondSet(filter: BondsPickerFilter) {
     this.http.post<Portfolio>("/api/bondsets", filter)
-      .subscribe(p => this.prtfl = p);
+      .subscribe(p => this.prtfls = p);
     this.portfolioRequested = true;
     this.filterSent = filter;
   }
@@ -28,7 +28,7 @@ export class Repository {
   }
 
   get portfolio(): Portfolio {
-    return this.prtfl;
+    return this.prtfls; // == null ? null : this.prtfls[0];
   }
 
   get formSent(): boolean {

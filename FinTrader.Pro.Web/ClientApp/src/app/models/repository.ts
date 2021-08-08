@@ -23,7 +23,7 @@ export class Repository {
   }
 
   get portfolios(): Portfolio[] {
-    return this.prtfls == null ? null : this.prtfls;
+    return this.prtfls;
   }
 
   get formSent(): boolean {

@@ -39,13 +39,13 @@ namespace FinTrader.Pro.Contracts
         /// <summary>
         /// Облигации без оферты
         /// </summary>
-        [JsonProperty(PropertyName = "withoutOffer")]
+        [JsonProperty(PropertyName = "isWithoutOffer")]
         public bool WithoutOffer { get; set; }
 
         /// <summary>
         /// Одна облигация от эмитента
         /// </summary>
-        [JsonProperty(PropertyName = "oneBondByIssuer")]
+        [JsonProperty(PropertyName = "isOneBondByIssuer")]
         public bool OneBondByIssuer { get; set; }
 
         /// <summary>

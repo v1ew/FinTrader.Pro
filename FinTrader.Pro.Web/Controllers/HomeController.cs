@@ -56,7 +56,7 @@ namespace FinTrader.Pro.Web.Controllers
             return Ok("Ok!");
         }
 
-        public async Task<IActionResult> ClearCache()
+        public IActionResult ClearCache()
         {
             //await finTraderRepository.ClearCacheAsync();
             return Ok("OK");

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FinTrader.Pro.Bonds.Extensions;
 using FinTrader.Pro.Bonds.Helpers;
+using FinTrader.Pro.Bonds.Models;
 using FinTrader.Pro.Bonds.Selector;
 using FinTrader.Pro.Contracts;
 using FinTrader.Pro.Contracts.Bonds;
@@ -39,8 +40,7 @@ namespace FinTrader.Pro.Bonds
             var oneYearPlus = DateTime.Now.AddYears(1).AddDays(1);
             var bonds = traderRepository.Bonds
                 .Where(b => !b.Discarded && b.Yield > 0 && b.Yield <= MAX_YIELD && b.ValueAvg > 0)
-                .Where(b => (b.OfferDate ?? b.MatDate).HasValue) // есть дата погашения или оферты
-                .Where(b => (b.OfferDate ?? b.MatDate).Value.CompareTo(oneYearPlus) > 0); // и эта дата дальше года
+                .Where(b => (b.OfferDate ?? b.MatDate).HasValue); // есть дата погашения или оферты
             
             if (filter.IsIncludedCorporate != filter.IsIncludedFederal)
             {
@@ -52,6 +52,12 @@ namespace FinTrader.Pro.Bonds
                 {
                     bonds = bonds.Where(b => b.SecType == "3");
                 }
+            }
+
+            // Исключаем бумаги с офертой
+            if (filter.WithoutOffer)
+            {
+                bonds = bonds.Where(b => b.OfferDate == null);
             }
 
             switch (filter.BondsClass)
@@ -77,6 +83,16 @@ namespace FinTrader.Pro.Bonds
             }
 
             var bondsSel = Runner.Select(bonds);
+            if (bondsSel == null)
+            {
+                return new[]
+                {
+                    new Portfolio {
+                        IsError = true, 
+                        ErrorMessage = "По запросу не найдены подходящие облигации. Измените параметры запроса и отправьте повторно, пожалуйста."
+                    }
+                };
+            }
             var selectedBonds = await bonds
                 .Where(b => bondsSel.BondsList.Keys.Contains(b.Isin))
                 .Select(b => new SelectedBond
@@ -137,9 +153,9 @@ namespace FinTrader.Pro.Bonds
 
             if (filter.TwoPortfolios)
             {
-                return new Portfolio[] {result, result};
+                return new [] {result, result};
             }
-            return new Portfolio[] {result};
+            return new [] {result};
         }
 
         /// <summary>

@@ -37,7 +37,7 @@ namespace FinTrader.Pro.Bonds.Selector
             return mySet;
         }
         
-        public static List<BondSelector> InitBondSets() {
+        private static List<BondSelector> InitBondSets() {
             var sets = new List<BondSelector> ();
             sets.Add(new BondSelector(new Dictionary<BondSetType, int> {
                 {BondSetType.T31, numBondsPerYear},
@@ -52,7 +52,7 @@ namespace FinTrader.Pro.Bonds.Selector
             return sets;
         }
 
-        public static List<DaysRange> InitRanges()
+        private static List<DaysRange> InitRanges()
         {
             var ranges = new List<DaysRange> {
                 new DaysRange {MinValue = 28, MaxValue = 31, SetType = BondSetType.T31},

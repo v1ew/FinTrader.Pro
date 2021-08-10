@@ -8,6 +8,7 @@ table {
 
 .bonds-req-results li {
   font-weight: bold;
+  padding-bottom: 10px;
 }
 
 .bonds-req-results li span {

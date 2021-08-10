@@ -7,7 +7,9 @@ export class Portfolio {
     public pay?: number,
     public yields?: number,
     public matDate?: Date,
-    public bondSets?: BondSet[]
+    public bondSets?: BondSet[],
+    public isError?: boolean,
+    public errorMessage?: string
   ) {
   }
 }

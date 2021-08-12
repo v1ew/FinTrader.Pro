@@ -184,13 +184,17 @@ namespace FinTrader.Pro.Bonds
 
                 bool isQual = false;
                 int emitter = 0;
-                (isQual, emitter) = await GetBondInfo(bond[BondsColumnNames.SecId]);
-                
-                if (NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponValue]) == 0 // Если размер купона - 0, то исключаем ее из своего списка
-                    || await HasAmortizations(bond[BondsColumnNames.SecId]) // Не берем бумаги с амортизацией
-                    || isQual) // Бумага для квалифицированных инвесторов
-                {
-                    discarded = true;
+                if (existingBond == null) {
+                    (isQual, emitter) = await GetBondInfo(bond[BondsColumnNames.SecId]);
+
+                    if (NullableValue.TryDoubleParse(bond[BondsColumnNames.CouponValue]) == 0 // Если размер купона - 0, то исключаем ее из своего списка
+                        || await HasAmortizations(bond[BondsColumnNames.SecId]) // Не берем бумаги с амортизацией
+                        || isQual) // Бумага для квалифицированных инвесторов
+                    {
+                        discarded = true;
+                    }
+                } else {
+                    emitter = existingBond.EmitterId.Value;
                 }
 
                 var bondLoaded = MakeBond(bond, emitter, discarded);

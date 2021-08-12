@@ -40,8 +40,9 @@ namespace FinTrader.Pro.Bonds
             var oneYearPlus = DateTime.Now.AddYears(1).AddDays(1);
             var bonds = traderRepository.Bonds
                 .Where(b => !b.Discarded && b.Yield > 0 && b.Yield <= MAX_YIELD && b.ValueAvg > 0)
-                .Where(b => (b.OfferDate ?? b.MatDate).HasValue); // есть дата погашения или оферты
-            
+                .Where(b => (b.OfferDate ?? b.MatDate).HasValue) // есть дата погашения или оферты
+                .Where(b => (b.OfferDate ?? b.MatDate).Value.CompareTo(oneYearPlus) > 0); // и эта дата дальше года
+
             if (filter.IsIncludedCorporate != filter.IsIncludedFederal)
             {
                 if (filter.IsIncludedCorporate) // выбираем корпоративные и биржевые
@@ -82,6 +83,7 @@ namespace FinTrader.Pro.Bonds
                     break;
             }
 
+            Runner.OneBondByIssuer = filter.OneBondByIssuer;
             var bondsSel = Runner.Select(bonds);
             if (bondsSel == null)
             {
@@ -688,6 +690,11 @@ namespace FinTrader.Pro.Bonds
                 || (!bond.NextCoupon.HasValue && bondLoaded.NextCoupon.HasValue))
             {
                 bond.NextCoupon = bondLoaded.NextCoupon;
+                result = true;
+            }
+            if (bondLoaded.OfferDate != bond.OfferDate)
+            {
+                bond.OfferDate = bondLoaded.OfferDate;
                 result = true;
             }
 

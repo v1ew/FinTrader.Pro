@@ -7,6 +7,7 @@ namespace FinTrader.Pro.Bonds.Selector
     public static class Runner
     {
         private static readonly int numBondsPerYear = 6;
+        public static bool OneBondByIssuer { get; set; } = false;
 
         public static BondSelector Select(IQueryable<Bond> bonds)
         {
@@ -24,7 +25,10 @@ namespace FinTrader.Pro.Bonds.Selector
                 // Добавили в нужные наборы
                 foreach (var st in sets.Where(st => st.HaveKey(setType) && !st.IsFull(setType)))
                 {
-                    st.Add(bond.Isin, bond.NextCoupon.Value.Month, setType);
+                    if (!(OneBondByIssuer && st.EmittersList.Contains(bond.EmitterId)))
+                    {
+                        st.Add(bond, setType);
+                    }
                 }
                 // Как только один набор наполнится, поиск прекращаем
                 if (sets.Any(st => st.IsFull()))

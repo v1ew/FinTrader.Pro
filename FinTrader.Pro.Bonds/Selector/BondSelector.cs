@@ -9,13 +9,11 @@ namespace FinTrader.Pro.Bonds.Selector
         private Dictionary<BondSetType, int> sampleSet;
         private Dictionary<BondSetType, int> resultSet;
         public Dictionary<string, int> BondsList { get; } // isin and month
-        public List<int?> EmittersList { get; }
 
         public BondSelector(Dictionary<BondSetType, int> sampleSet) {
             this.sampleSet = sampleSet;
             resultSet = new Dictionary<BondSetType, int>();
             BondsList = new Dictionary<string, int>();
-            EmittersList = new List<int?>();
             foreach (var key in sampleSet.Keys) {
                 resultSet[key] = 0;
             }
@@ -25,7 +23,6 @@ namespace FinTrader.Pro.Bonds.Selector
         {
             if (BondsList.Values.Contains(bond.NextCoupon.Value.Month)) return;
             BondsList.Add(bond.Isin, bond.NextCoupon.Value.Month);
-            EmittersList.Add(bond.EmitterId);
             resultSet[type] += 1;
         }
 	

@@ -1,15 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FinTrader.Pro.Contracts;
 using FinTrader.Pro.DB.Models;
 
 namespace FinTrader.Pro.Bonds.Selector
 {
-    public static class Runner
+    public class Runner
     {
-        private static readonly int numBondsPerYear = 6;
-        public static bool OneBondByIssuer { get; set; } = false;
+        private const int NumBondsPerYear = 6;
+        private readonly BondsPickerParams _pickerParams;
+        private readonly List<int?> _emittersList;
+        private readonly List<string> _firstPortfolio;
 
-        public static BondSelector Select(IQueryable<Bond> bonds)
+        public Runner(BondsPickerParams pickerParams)
+        {
+            _pickerParams = pickerParams;
+            _emittersList = new List<int?>();
+            _firstPortfolio = new List<string>();
+        }
+        
+        public BondSelector Select(IQueryable<Bond> bonds)
         {
             var ranges = InitRanges();
             var sets = InitBondSets();
@@ -19,14 +29,18 @@ namespace FinTrader.Pro.Bonds.Selector
             foreach(var bond in bonds) {
                 BondSetType setType = BondSetType.None;
                 if (!bond.CouponPeriod.HasValue || !bond.NextCoupon.HasValue) continue;
+                // Если собираем второй портфель, то исключаем содержимое первого
+                if (_firstPortfolio.Any() && _firstPortfolio.Contains(bond.Isin)) continue;
+                
                 // Определили тип облигации по периоду
                 setType = ranges.Where(r => r.ThisRange(bond.CouponPeriod.Value)).Select(r => r.SetType).FirstOrDefault();
 		
                 // Добавили в нужные наборы
                 foreach (var st in sets.Where(st => st.HaveKey(setType) && !st.IsFull(setType)))
                 {
-                    if (!(OneBondByIssuer && st.EmittersList.Contains(bond.EmitterId)))
+                    if (!(_pickerParams.OneBondByIssuer && _emittersList.Contains(bond.EmitterId)))
                     {
+                        _emittersList.Add(bond.EmitterId);
                         st.Add(bond, setType);
                     }
                 }
@@ -38,25 +52,31 @@ namespace FinTrader.Pro.Bonds.Selector
                 }
             }
 
+            // Сохраняем на случай, если надо будет собирать второй портфель
+            foreach (var bondIsin in mySet.BondsList.Keys)
+            {
+                _firstPortfolio.Add(bondIsin);
+            }
+            
             return mySet;
         }
         
-        private static List<BondSelector> InitBondSets() {
+        private List<BondSelector> InitBondSets() {
             var sets = new List<BondSelector> ();
             sets.Add(new BondSelector(new Dictionary<BondSetType, int> {
-                {BondSetType.T31, numBondsPerYear},
+                {BondSetType.T31, NumBondsPerYear},
             }));
             sets.Add(new BondSelector(new Dictionary<BondSetType, int> {
-                {BondSetType.T91, numBondsPerYear},
+                {BondSetType.T91, NumBondsPerYear},
             }));
             sets.Add(new BondSelector(new Dictionary<BondSetType, int> {
-                {BondSetType.T182, numBondsPerYear},
+                {BondSetType.T182, NumBondsPerYear},
             }));
 
             return sets;
         }
 
-        private static List<DaysRange> InitRanges()
+        private List<DaysRange> InitRanges()
         {
             var ranges = new List<DaysRange> {
                 new DaysRange {MinValue = 28, MaxValue = 31, SetType = BondSetType.T31},

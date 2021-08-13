@@ -83,8 +83,8 @@ namespace FinTrader.Pro.Bonds
                     break;
             }
 
-            Runner.OneBondByIssuer = filter.OneBondByIssuer;
-            var bondsSel = Runner.Select(bonds);
+            var runner = new Runner(filter);
+            var bondsSel = runner.Select(bonds);
             if (bondsSel == null)
             {
                 return new[]

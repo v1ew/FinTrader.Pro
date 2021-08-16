@@ -120,10 +120,16 @@ namespace FinTrader.Pro.Bonds
                     double cAvg = selectedBonds.Average(s => s.CouponValue);
                     selectedBonds.ForEach(s => s.K = (1 + (1 - s.CouponValue / cAvg)));
                     double oneBond = invAmount / selectedBonds.Count();
+                    // Найдем количество бумаги к покупке
                     selectedBonds.ForEach(s => s.Sum = oneBond * s.K);
                     selectedBonds.ForEach(s => s.AmountToBye = (int)(s.Sum / s.Cost));
+                    // Расчитаем реальную стоимость бумаги
+                    selectedBonds.ForEach(s => s.Sum = s.AmountToBye * s.Cost);
+                    // Вычислим реальную стоимость портфеля
+                    invAmount = selectedBonds.Sum(s => s.Sum);
                     avgPay = (int)selectedBonds.Average(s => s.AmountToBye * s.CouponValue);
-                    avgYield = selectedBonds.Average(s => s.Yield);
+                    // Посчитаем примерную доходность портфеля
+                    avgYield = selectedBonds.Sum(s => s.Yield * s.AmountToBye) / selectedBonds.Sum(s => s.AmountToBye);
                 }
                 else
                 {
@@ -131,8 +137,10 @@ namespace FinTrader.Pro.Bonds
                     avgPay = (int)monthPay;
                     selectedBonds.ForEach(s => s.AmountToBye = (int)Math.Round(monthPay / s.CouponValue));
                     selectedBonds.ForEach(s => s.Sum = s.AmountToBye * s.Cost);
+                    // Вычислим реальную стоимость портфеля
                     invAmount = selectedBonds.Sum(s => s.Sum);
-                    avgYield = selectedBonds.Average(s => s.Yield);
+                    // Посчитаем примерную доходность портфеля
+                    avgYield = selectedBonds.Sum(s => s.Yield * s.AmountToBye) / selectedBonds.Sum(s => s.AmountToBye);
                 }
             }
             // TODO: move up
@@ -695,6 +703,16 @@ namespace FinTrader.Pro.Bonds
             if (bondLoaded.OfferDate != bond.OfferDate)
             {
                 bond.OfferDate = bondLoaded.OfferDate;
+                result = true;
+            }
+            if (bondLoaded.PrevWaPrice != bond.PrevWaPrice)
+            {
+                bond.PrevWaPrice = bondLoaded.PrevWaPrice;
+                result = true;
+            }
+            if (bondLoaded.YieldAtPrevWaPrice != bond.YieldAtPrevWaPrice)
+            {
+                bond.YieldAtPrevWaPrice = bondLoaded.YieldAtPrevWaPrice;
                 result = true;
             }
 

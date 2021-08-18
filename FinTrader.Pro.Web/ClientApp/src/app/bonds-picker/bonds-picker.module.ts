@@ -12,7 +12,7 @@ import { HttpClientModule } from '@angular/common/http';
 //import { CdkTreeModule } from '@angular/cdk/tree';
 //import { MatAutocompleteModule } from '@angular/material/autocomplete';
 //import { MatBadgeModule } from '@angular/material/badge';
-//import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 //import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -49,12 +49,14 @@ import { Repository } from '../models/repository';
 import { BondsPickerFormComponent } from './bonds-picker-form/bonds-picker-form.component';
 import { BondsPickerResultComponent } from './bonds-picker-result/bonds-picker-result.component';
 import { PortfolioTabsComponent } from './portfolio-tabs/portfolio-tabs.component';
+import { DisclaimerSheetComponent } from './disclaimer-sheet/disclaimer-sheet.component';
 
 @NgModule({
   declarations: [
     BondsPickerFormComponent,
     BondsPickerResultComponent,
     PortfolioTabsComponent,
+    DisclaimerSheetComponent,
   ],
   providers: [
     Repository
@@ -71,7 +73,7 @@ import { PortfolioTabsComponent } from './portfolio-tabs/portfolio-tabs.componen
     // // DragDropModule,
     // MatAutocompleteModule,
     // MatBadgeModule,
-    // MatBottomSheetModule,
+    MatBottomSheetModule,
     MatButtonModule,
     // MatButtonToggleModule,
     MatCardModule,

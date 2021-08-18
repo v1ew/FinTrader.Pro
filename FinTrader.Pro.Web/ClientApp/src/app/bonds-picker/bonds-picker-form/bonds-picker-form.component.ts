@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BondsPickerFilter } from '../../models/bonds-picker-filter.model';
 import { Repository } from '../../models/repository';
+import { MatBottomSheet } from "@angular/material/bottom-sheet";
+import { DisclaimerSheetComponent } from "../disclaimer-sheet/disclaimer-sheet.component";
 
 interface SelectItem {
   value: string;
@@ -28,7 +30,7 @@ export class BondsPickerFormComponent implements OnInit {
     { value: "MonthlyCoupon", text: "По купону в месяц" },
   ];
 
-  constructor(private router: Router, private repo: Repository) {
+  constructor(private router: Router, private repo: Repository, private disclaimerSheet: MatBottomSheet) {
     if (this.repo.savedFilter == null) {
       this.bondsPicker = new BondsPickerFilter(false, false, "MostLiquid", null, false, "InvestmentAmount", this.sliderMin, false, false, false);
     } else {
@@ -80,6 +82,10 @@ export class BondsPickerFormComponent implements OnInit {
     }
 
     return value;
+  }
+
+  openDisclaimerSheet(): void {
+    this.disclaimerSheet.open(DisclaimerSheetComponent);
   }
 
   get sliderMin(): number {

@@ -32,6 +32,14 @@ h3 {
   margin-right: 0;
 }
 
+.disclaimer {
+  width: 60%;
+  margin: 1px auto;
+  padding: 20px;
+  background-color: lightsteelblue;
+  text-align: center;
+}
+
 @media screen and (max-width: 780px){
   .bonds-picker-card {
 	margin: 10px auto;

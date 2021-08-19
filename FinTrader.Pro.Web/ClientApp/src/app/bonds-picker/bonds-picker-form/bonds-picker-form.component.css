@@ -40,6 +40,10 @@ h3 {
   text-align: center;
 }
 
+.checkboxesGroup {
+  margin-bottom: 20px;
+}
+
 @media screen and (max-width: 780px){
   .bonds-picker-card {
 	margin: 10px auto;

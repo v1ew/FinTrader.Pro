@@ -32,7 +32,7 @@ export class BondsPickerFormComponent implements OnInit {
 
   constructor(private router: Router, private repo: Repository, private disclaimerSheet: MatBottomSheet) {
     if (this.repo.savedFilter == null) {
-      this.bondsPicker = new BondsPickerFilter(false, false, "MostLiquid", null, false, "InvestmentAmount", this.sliderMin, false, false, false);
+      this.resetForm();
     } else {
       this.bondsPicker = this.repo.savedFilter;
     }
@@ -73,7 +73,11 @@ export class BondsPickerFormComponent implements OnInit {
     }
   }
 
-  formatLabel(value: number) {
+  resetForm(): void {
+    this.bondsPicker = new BondsPickerFilter(false, false, "MostLiquid", null, false, "InvestmentAmount", this.sliderMin, false, false, false);
+  }
+
+  formatLabel(value: number): string {
     if (value >= 1000000) {
       return Math.round(value / 10000) / 100 + 'm';
     }
@@ -81,7 +85,7 @@ export class BondsPickerFormComponent implements OnInit {
       return Math.round(value / 1000) + 'k';
     }
 
-    return value;
+    return value + '';
   }
 
   openDisclaimerSheet(): void {

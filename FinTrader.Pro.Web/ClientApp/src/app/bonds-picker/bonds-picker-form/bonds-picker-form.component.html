@@ -10,19 +10,22 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col">
-          <mat-checkbox labelPosition="after" (change)="onToggleIsIncludedFederal()" name="isIncludedFederal"
-                        [(ngModel)]="bondsPicker.isIncludedFederal">
-            Государственные облигации (ОФЗ)
-          </mat-checkbox>
+      <div class="checkboxesGroup">
+        <div class="row">
+          <div class="col">
+            <mat-checkbox labelPosition="after" (change)="onToggleIsIncludedFederal()" name="isIncludedFederal"
+                          [(ngModel)]="bondsPicker.isIncludedFederal">
+              Государственные облигации (ОФЗ)
+            </mat-checkbox>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <mat-checkbox labelPosition="after" name="isIncludedCorporate" [(ngModel)]="bondsPicker.isIncludedCorporate">
-            Облигации компаний
-          </mat-checkbox>
+
+        <div class="row">
+          <div class="col">
+            <mat-checkbox labelPosition="after" name="isIncludedCorporate" [(ngModel)]="bondsPicker.isIncludedCorporate">
+              Облигации компаний
+            </mat-checkbox>
+          </div>
         </div>
       </div>
 
@@ -83,31 +86,34 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col">
-          <mat-checkbox labelPosition="after" name="isWithoutOffer" [(ngModel)]="bondsPicker.isWithoutOffer">
-            Облигации без оферты
-          </mat-checkbox>
+      <div class="checkboxesGroup">
+        <div class="row">
+          <div class="col">
+            <mat-checkbox labelPosition="after" name="isWithoutOffer" [(ngModel)]="bondsPicker.isWithoutOffer">
+              Облигации без оферты
+            </mat-checkbox>
+          </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col">
-          <mat-checkbox [disabled]="bondsPicker.isIncludedFederal" labelPosition="after" name="isOneBondByIssuer" [(ngModel)]="bondsPicker.isOneBondByIssuer">
-            Одна облигация от эмитента
-          </mat-checkbox>
+        <div class="row">
+          <div class="col">
+            <mat-checkbox [disabled]="bondsPicker.isIncludedFederal" labelPosition="after" name="isOneBondByIssuer" [(ngModel)]="bondsPicker.isOneBondByIssuer">
+              Одна облигация от эмитента
+            </mat-checkbox>
+          </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col">
-          <mat-checkbox labelPosition="after" name="isTwoPortfolios" (change)="onToggleIsTwoPortfolios()" [(ngModel)]="bondsPicker.isTwoPortfolios">
-            Разделить сумму на 2 портфеля
-          </mat-checkbox>
+        <div class="row">
+          <div class="col">
+            <mat-checkbox labelPosition="after" name="isTwoPortfolios" (change)="onToggleIsTwoPortfolios()" [(ngModel)]="bondsPicker.isTwoPortfolios">
+              Разделить сумму на 2 портфеля
+            </mat-checkbox>
+          </div>
         </div>
       </div>
     </mat-card-content>
     <mat-card-actions align="end">
+      <button mat-raised-button (click)="resetForm()" type="button">Сбросить</button>
       <button mat-raised-button color="primary" type="submit">Рассчитать</button>
     </mat-card-actions>
   </mat-card>

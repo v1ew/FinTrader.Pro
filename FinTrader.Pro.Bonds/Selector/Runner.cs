@@ -29,39 +29,119 @@ namespace FinTrader.Pro.Bonds.Selector
 
         public async Task<Portfolio[]> ExecuteAsync(IQueryable<Bond> bonds)
         {
-            var bondsSel = Select(bonds);
-            if (bondsSel == null)
-            {
-                return new[]
-                {
-                    new Portfolio {
-                        IsError = true, 
-                        ErrorMessage = "По запросу не найдены подходящие облигации. Измените параметры запроса и отправьте повторно, пожалуйста."
-                    }
-                };
-            }
-            var selectedBonds = await bonds
-                .Where(b => bondsSel.BondsList.Keys.Contains(b.Isin))
-                .Select(b => new SelectedBond
-            {
-                ShortName = b.ShortName,
-                MatDate = b.MatDate.Value,
-                CouponValue = b.CouponValue.Value,
-                AmountToBye = 10,
-                Yield = b.Yield.Value,
-                Sum = 0.0,
-                Isin = b.Isin,
-                Cost = b.PrevWaPrice.Value * b.FaceValue.Value / 100
-            }).ToListAsync();
+            Portfolio portfolio1 = new Portfolio();
+            Portfolio portfolio2 = new Portfolio();
+            double amount = _pickerParams.Amount.Value * 1.03;
 
-            double invAmount = 0.0;
+            if (!_pickerParams.TwoPortfolios)
+            {
+                portfolio1 = await GetPortfolioAsync(bonds, amount);
+
+                return new [] { portfolio1 };
+            }
+
+            // Two portfolios
+            for (int i = 0; i < 2; i++)
+            {
+                if (i == 0)
+                {
+                    portfolio1 = await GetPortfolioAsync(bonds, amount / 2.0);
+                }
+                else
+                {
+                    if (!portfolio1.IsError)
+                    {
+                        portfolio2 = await GetPortfolioAsync(bonds, amount - portfolio1.Sum);
+                    }
+                    else
+                    {
+                        return new [] { portfolio1 };
+                    }
+                }
+            }
+
+            return new [] { portfolio1, portfolio2 };
+        }
+
+        private async Task<Portfolio> GetPortfolioAsync(IQueryable<Bond> bonds, double amount)
+        {
+            var portfolio = new Portfolio();
+            var selectedBonds = await GetBondsSetAsync(bonds);
+            if (selectedBonds.Count == 0)
+            {
+                portfolio.IsError = true;
+                portfolio.ErrorMessage =
+                    "По запросу не найдены подходящие облигации. Измените параметры запроса и отправьте повторно, пожалуйста.";
+            }
+            else
+            {
+                portfolio = await CalculatePortfolioAsync(selectedBonds, amount);
+            }
+
+            return portfolio;
+        }
+        
+        /// <summary>
+        /// Осуществляет подбор облигаций, путем перебора бумаг и формирования наборов по схожим параметрам
+        /// Возвращает первый полный набор
+        /// </summary>
+        /// <param name="bonds">Облигации, отобранные и отсортированные по параметрам фильтра</param>
+        /// <returns>Набор бумаг, на основе которого формируется портфель</returns>
+        private BondSelector Select(IQueryable<Bond> bonds)
+        {
+            var ranges = InitRanges();
+            var sets = InitBondSets();
+
+            //На вход получаем отобранные, упорядоченные по убыванию релевантности облигации
+            BondSelector mySet = null;
+            foreach(var bond in bonds) {
+                BondSetType setType = BondSetType.None;
+                if (!bond.CouponPeriod.HasValue || !bond.NextCoupon.HasValue) continue;
+                // Если собираем второй портфель, то исключаем содержимое первого
+                if (_firstPortfolio.Any() && _firstPortfolio.Contains(bond.Isin)) continue;
+                
+                // Определили тип облигации по периоду
+                setType = ranges.Where(r => r.ThisRange(bond.CouponPeriod.Value)).Select(r => r.SetType).FirstOrDefault();
+		
+                // Добавили в нужные наборы
+                foreach (var st in sets.Where(st => st.HaveKey(setType) && !st.IsFull(setType)))
+                {
+                    if (!(_pickerParams.OneBondByIssuer && _emittersList.Contains(bond.EmitterId)))
+                    {
+                        _emittersList.Add(bond.EmitterId);
+                        st.Add(bond, setType);
+                    }
+                }
+                // Как только один набор наполнится, поиск прекращаем
+                if (sets.Any(st => st.IsFull()))
+                {
+                    mySet = sets.First(st => st.IsFull());
+                    break;
+                }
+            }
+
+            // Сохраняем на случай, если надо будет собирать второй портфель
+            foreach (var bondIsin in mySet.BondsList.Keys)
+            {
+                _firstPortfolio.Add(bondIsin);
+            }
+            
+            return mySet;
+        }
+
+        /// <summary>
+        /// Осуществляет расчет количества бумаг для портфеля с целью получения ежемесячно заданной суммы в виде купона
+        /// </summary>
+        /// <param name="selectedBonds">Набор облигаций портфеля</param>
+        /// <returns>Готовый портфель</returns>
+        public async Task<Portfolio> CalculatePortfolioAsync(List<SelectedBond> selectedBonds, double invAmount)
+        {
             int avgPay = 0;
             double avgYield = 0.0;
             if (_pickerParams.Amount.HasValue)
             {
                 if (_pickerParams.Method == CalculationMethod.InvestmentAmount)
                 {
-                    invAmount = _pickerParams.Amount.Value * 1.03;
                     double cAvg = selectedBonds.Average(s => s.CouponValue);
                     selectedBonds.ForEach(s => s.K = (1 + (1 - s.CouponValue / cAvg)));
                     double oneBond = invAmount / selectedBonds.Count();
@@ -106,61 +186,33 @@ namespace FinTrader.Pro.Bonds.Selector
                     Coupons = await GetCouponsAsync(selectedBonds.ToDictionary(b => b.Isin, b => b))
                 }
             );
-
-            if (_pickerParams.TwoPortfolios)
-            {
-                return new [] {result, result};
-            }
-            return new [] {result};
-        }
-        
-        private BondSelector Select(IQueryable<Bond> bonds)
-        {
-            var ranges = InitRanges();
-            var sets = InitBondSets();
-
-            //На вход получаем отобранные, упорядоченные по убыванию релевантности облигации
-            BondSelector mySet = null;
-            foreach(var bond in bonds) {
-                BondSetType setType = BondSetType.None;
-                if (!bond.CouponPeriod.HasValue || !bond.NextCoupon.HasValue) continue;
-                // Если собираем второй портфель, то исключаем содержимое первого
-                if (_firstPortfolio.Any() && _firstPortfolio.Contains(bond.Isin)) continue;
-                
-                // Определили тип облигации по периоду
-                setType = ranges.Where(r => r.ThisRange(bond.CouponPeriod.Value)).Select(r => r.SetType).FirstOrDefault();
-		
-                // Добавили в нужные наборы
-                foreach (var st in sets.Where(st => st.HaveKey(setType) && !st.IsFull(setType)))
-                {
-                    if (!(_pickerParams.OneBondByIssuer && _emittersList.Contains(bond.EmitterId)))
-                    {
-                        _emittersList.Add(bond.EmitterId);
-                        st.Add(bond, setType);
-                    }
-                }
-                // Как только один набор наполнится, поиск прекращаем
-                if (sets.Any(st => st.IsFull()))
-                {
-                    mySet = sets.First(st => st.IsFull());
-                    break;
-                }
-            }
-
-            // Сохраняем на случай, если надо будет собирать второй портфель
-            foreach (var bondIsin in mySet.BondsList.Keys)
-            {
-                _firstPortfolio.Add(bondIsin);
-            }
             
-            return mySet;
+            return result;
         }
 
-        public void Calculate(BondSelector bondsSel)
+        private async Task<List<SelectedBond>> GetBondsSetAsync(IQueryable<Bond> bonds)
         {
-            
+            var bondsSel = Select(bonds);
+            if (bondsSel == null)
+            {
+                return new List<SelectedBond>();
+            }
+            var selectedBonds = await bonds
+                .Where(b => bondsSel.BondsList.Keys.Contains(b.Isin))
+                .Select(b => new SelectedBond
+                {
+                    ShortName = b.ShortName,
+                    MatDate = b.MatDate.Value,
+                    CouponValue = b.CouponValue.Value,
+                    AmountToBye = 10,
+                    Yield = b.Yield.Value,
+                    Sum = 0.0,
+                    Isin = b.Isin,
+                    Cost = b.PrevWaPrice.Value * b.FaceValue.Value / 100
+                }).ToListAsync();
+
+            return selectedBonds;
         }
-        
                 
         /// <summary>
         /// Получить массив купонов по массиву номеров isin

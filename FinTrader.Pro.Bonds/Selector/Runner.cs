@@ -27,12 +27,18 @@ namespace FinTrader.Pro.Bonds.Selector
             _traderRepository = traderRepository;
         }
 
+        /// <summary>
+        /// Запускает подбор портфелей, в зависимости от требуемого количества - один или два
+        /// </summary>
+        /// <param name="bonds"></param>
+        /// <returns></returns>
         public async Task<Portfolio[]> ExecuteAsync(IQueryable<Bond> bonds)
         {
             Portfolio portfolio1 = new Portfolio();
             Portfolio portfolio2 = new Portfolio();
             double amount = _pickerParams.Amount.Value * 1.03;
 
+            // One portfolio
             if (!_pickerParams.TwoPortfolios)
             {
                 portfolio1 = await GetPortfolioAsync(bonds, amount);
@@ -41,28 +47,26 @@ namespace FinTrader.Pro.Bonds.Selector
             }
 
             // Two portfolios
-            for (int i = 0; i < 2; i++)
+            portfolio1 = await GetPortfolioAsync(bonds, amount / 2.0);
+            if (portfolio1.IsError)
             {
-                if (i == 0)
-                {
-                    portfolio1 = await GetPortfolioAsync(bonds, amount / 2.0);
-                }
-                else
-                {
-                    if (!portfolio1.IsError)
-                    {
-                        portfolio2 = await GetPortfolioAsync(bonds, amount - portfolio1.Sum);
-                    }
-                    else
-                    {
-                        return new [] { portfolio1 };
-                    }
-                }
+                return new [] { portfolio1 };
+            }
+            else
+            {
+                portfolio2 = await GetPortfolioAsync(bonds, amount - portfolio1.Sum);
             }
 
             return new [] { portfolio1, portfolio2 };
         }
 
+        /// <summary>
+        /// Вызывает подбор облигаций портфеля и
+        /// расчет количества бумаг в портфель для получения требуемого размера купона
+        /// </summary>
+        /// <param name="bonds"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         private async Task<Portfolio> GetPortfolioAsync(IQueryable<Bond> bonds, double amount)
         {
             var portfolio = new Portfolio();
@@ -131,6 +135,7 @@ namespace FinTrader.Pro.Bonds.Selector
 
         /// <summary>
         /// Осуществляет расчет количества бумаг для портфеля с целью получения ежемесячно заданной суммы в виде купона
+        /// Формирует портфель из набора облигаций
         /// </summary>
         /// <param name="selectedBonds">Набор облигаций портфеля</param>
         /// <returns>Готовый портфель</returns>
@@ -190,6 +195,11 @@ namespace FinTrader.Pro.Bonds.Selector
             return result;
         }
 
+        /// <summary>
+        /// Вызывает метод выбора облигаций для помесячного получения купона
+        /// </summary>
+        /// <param name="bonds"></param>
+        /// <returns>Список отобранных облигаций</returns>
         private async Task<List<SelectedBond>> GetBondsSetAsync(IQueryable<Bond> bonds)
         {
             var bondsSel = Select(bonds);
@@ -223,7 +233,7 @@ namespace FinTrader.Pro.Bonds.Selector
         private async Task<SelectedCoupon[]> GetCouponsAsync(IDictionary<string, SelectedBond> bonds)
         {
             var today = DateTime.Now;
-            return await _traderRepository.Coupons
+            var coupons = await _traderRepository.Coupons
                 .Where(c => bonds.Keys.Contains(c.Isin) 
                             && c.CouponDate.HasValue 
                             && c.CouponDate.Value.CompareTo(today) >= 0)
@@ -237,6 +247,12 @@ namespace FinTrader.Pro.Bonds.Selector
                 })
                 .OrderBy(sc => sc.Date)
                 .ToArrayAsync();
+            int counter = 0;
+            foreach (var selectedCoupon in coupons)
+            {
+                selectedCoupon.Position = ++counter;
+            }
+            return coupons;
         }
 
         private List<BondSelector> InitBondSets() {

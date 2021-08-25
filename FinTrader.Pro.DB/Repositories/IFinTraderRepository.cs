@@ -27,6 +27,8 @@ namespace FinTrader.Pro.DB.Repositories
 
         Task UpdateCouponsRangeAsync(IEnumerable<Coupon> coupons);
 
+        Task RemoveCouponsAsync(Coupon[] coupons);
+
         Task UpdateConfigAsync(Config config);
         
         Task ClearCacheAsync();

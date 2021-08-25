@@ -66,7 +66,14 @@ namespace FinTrader.Pro.Bonds
                 case BondClass.ByRepaymentDate:
                     if (filter.RepaymentDate.HasValue)
                     {
-                        bonds = bonds.Where(b => b.MatDate.Value.CompareTo(filter.RepaymentDate.Value) <= 0);
+                        if (filter.StrictlyUpToDate)
+                        {
+                            bonds = bonds.Where(b => b.MatDate.Value.CompareTo(filter.RepaymentDate.Value) <= 0);
+                        }
+                        else
+                        {
+                            bonds = bonds.Where(b => b.MatDate.Value.CompareTo(filter.RepaymentDate.Value.AddMonths(1)) <= 0);
+                        }
                     }
                     //TODO: По дате погашения - надо учитывать дату оферты
 
@@ -152,17 +159,21 @@ namespace FinTrader.Pro.Bonds
             var changedBonds = new List<string>();
             var now = DateTime.Now;
             
+            // Получаем id всех активных облигаций (не деактивированных)
             var bondSecIds = traderRepository.Bonds
                 .Where(b => !b.Discarded)
                 .Select(b => b.SecId).ToArray();
             foreach (var secId in bondSecIds)
             {
+                // Обновляем купоны выбранных облигаций
                 if (!await UpdateBondCouponsAsync(secId, now))
                 {
+                    // Если бумагу надо деактивировать, добавляем в список
                     changedBonds.Add(secId);
                 }
             }
 
+            // Деактивируем все отобранные облигации
             if (changedBonds.Any())
             {
                 var discardedBonds = await traderRepository.Bonds.Where(b => changedBonds.Contains(b.SecId))
@@ -506,8 +517,15 @@ namespace FinTrader.Pro.Bonds
             if (!coupons.Any())
                 return false;
 
+            // Удаляем все старые купоны
+            var isin = traderRepository.Bonds.Where(b => b.SecId == secId).Select(b => b.Isin).FirstOrDefault();
+            var couponsToRemove = await traderRepository.Coupons.Where(c => c.Isin == isin).ToArrayAsync();
+            if (couponsToRemove.Any())
+            {
+                await traderRepository.RemoveCouponsAsync(couponsToRemove);
+            }
+            
             var newCoupons = new List<Coupon>();
-            var oldCoupons = new List<Coupon>();
             foreach (var coupon in coupons)
             {
                 if (coupon[CouponsColumnNames.Value] == null) continue;
@@ -517,30 +535,14 @@ namespace FinTrader.Pro.Bonds
                 if (couponDate.HasValue && couponDate.Value.CompareTo(now) >= 0)
                 {
                     var newCoupon = MakeCoupon(coupon, couponDate.Value);
+                    newCoupons.Add(newCoupon);
 
-                    var oldCoupon = traderRepository.Coupons
-                        .FirstOrDefault(c => c.Isin == newCoupon.Isin && c.CouponDate.Value.CompareTo(couponDate.Value) == 0);
-                    if (oldCoupon != null)
-                    {
-                        if (haveChanges(oldCoupon, newCoupon))
-                        {
-                            oldCoupons.Add(oldCoupon);
-                        }
-                    } else
-                    {
-                        newCoupons.Add(newCoupon);
-                    }
                 }
             }
 
             if (newCoupons.Any())
             {
                 await traderRepository.AddCouponsRangeAsync(newCoupons.ToArray());
-            }
-
-            if (oldCoupons.Any())
-            {
-                await traderRepository.UpdateCouponsRangeAsync(oldCoupons);
             }
 
             return true;
@@ -604,27 +606,6 @@ namespace FinTrader.Pro.Bonds
             }
 
             if (result) bond.Updated = DateTime.Now;
-            
-            return result;
-        }
-
-        private bool haveChanges(Coupon oldC, Coupon newC)
-        {
-            bool result = false;
-
-            if (oldC.FaceValue != newC.FaceValue)
-            {
-                oldC.FaceValue = newC.FaceValue;
-                result = true;
-            }
-
-            if (oldC.Value != newC.Value)
-            {
-                oldC.Value = newC.Value;
-                oldC.ValueRub = newC.ValueRub;
-                oldC.ValuePrc = newC.ValuePrc;
-                result = true;
-            }
             
             return result;
         }

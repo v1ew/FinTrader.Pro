@@ -57,6 +57,12 @@ namespace FinTrader.Pro.DB.Repositories
             await _context.TradeDates.AddRangeAsync(dates);
             await _context.SaveChangesAsync(default);
         }
+
+        public async Task RemoveCouponsAsync(Coupon[] coupons)
+        {
+            _context.Coupons.RemoveRange(coupons);
+            await _context.SaveChangesAsync(default);
+        }
         
         public async Task ClearCacheAsync()
         {

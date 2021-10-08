@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FinTrader.Pro.Bonds.Models;
 using FinTrader.Pro.Contracts;
 using FinTrader.Pro.Contracts.Bonds;
 using FinTrader.Pro.Contracts.Enums;
@@ -32,7 +33,7 @@ namespace FinTrader.Pro.Bonds.Selector
         /// </summary>
         /// <param name="bonds"></param>
         /// <returns></returns>
-        public async Task<Portfolio[]> ExecuteAsync(IQueryable<Bond> bonds)
+        public async Task<Portfolio[]> ExecuteAsync(IEnumerable<BondExt> bonds)
         {
             Portfolio portfolio1 = new Portfolio();
             Portfolio portfolio2 = new Portfolio();
@@ -67,10 +68,10 @@ namespace FinTrader.Pro.Bonds.Selector
         /// <param name="bonds"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        private async Task<Portfolio> GetPortfolioAsync(IQueryable<Bond> bonds, double amount)
+        private async Task<Portfolio> GetPortfolioAsync(IEnumerable<BondExt> bonds, double amount)
         {
             var portfolio = new Portfolio();
-            var selectedBonds = await GetBondsSetAsync(bonds);
+            var selectedBonds = GetBondsSet(bonds);
             if (selectedBonds.Count == 0)
             {
                 portfolio.IsError = true;
@@ -91,7 +92,7 @@ namespace FinTrader.Pro.Bonds.Selector
         /// </summary>
         /// <param name="bonds">Облигации, отобранные и отсортированные по параметрам фильтра</param>
         /// <returns>Набор бумаг, на основе которого формируется портфель</returns>
-        private BondSelector Select(IQueryable<Bond> bonds)
+        private BondSelector Select(IEnumerable<BondExt> bonds)
         {
             var ranges = InitRanges();
             var sets = InitBondSets();
@@ -200,14 +201,14 @@ namespace FinTrader.Pro.Bonds.Selector
         /// </summary>
         /// <param name="bonds"></param>
         /// <returns>Список отобранных облигаций</returns>
-        private async Task<List<SelectedBond>> GetBondsSetAsync(IQueryable<Bond> bonds)
+        private List<SelectedBond> GetBondsSet(IEnumerable<BondExt> bonds)
         {
             var bondsSel = Select(bonds);
             if (bondsSel == null)
             {
                 return new List<SelectedBond>();
             }
-            var selectedBonds = await bonds
+            var selectedBonds = bonds
                 .Where(b => bondsSel.BondsList.Keys.Contains(b.Isin))
                 .Select(b => new SelectedBond
                 {
@@ -219,7 +220,7 @@ namespace FinTrader.Pro.Bonds.Selector
                     Sum = 0.0,
                     Isin = b.Isin,
                     Cost = b.PrevWaPrice.Value * b.FaceValue.Value / 100
-                }).ToListAsync();
+                }).ToList();
 
             return selectedBonds;
         }

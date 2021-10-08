@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FinTrader.Pro.Bonds.Extensions;
+using FinTrader.Pro.Bonds.Models;
 using FinTrader.Pro.Contracts;
 using FinTrader.Pro.Contracts.Bonds;
 using FinTrader.Pro.Contracts.Enums;
@@ -55,36 +56,45 @@ namespace FinTrader.Pro.Bonds
                 bonds = bonds.Where(b => b.OfferDate == null);
             }
 
+            var bondsExt = await bonds.Select(b => new BondExt(b)).ToArrayAsync();
+            IEnumerable<BondExt> bondExts = null;
+
             switch (filter.BondsClass)
             {
                 case BondClass.MostLiquid:
-                    bonds = bonds.OrderByDescending(b => b.ValueAvg).ThenByDescending(b => b.CouponPercent);
+                    bondExts = bondsExt.OrderByDescending(b => b.ValueAvg).ThenByDescending(b => b.CouponPercent);
                     break;
                 case BondClass.MostProfitable:
-                    bonds = bonds.OrderByDescending(b => b.CouponPercent).ThenByDescending(b => b.ValueAvg);
+                    bondExts = bondsExt.OrderByDescending(b => b.CouponPercent).ThenByDescending(b => b.ValueAvg);
                     break;
                 case BondClass.ByRepaymentDate:
                     if (filter.RepaymentDate.HasValue)
                     {
                         if (filter.StrictlyUpToDate)
                         {
-                            bonds = bonds.Where(b => b.MatDate.Value.CompareTo(filter.RepaymentDate.Value) <= 0);
+                            bondExts = bondsExt.Where(b => b.CommonDate.Value.CompareTo(filter.RepaymentDate.Value) <= 0);
                         }
                         else
                         {
-                            bonds = bonds.Where(b => b.MatDate.Value.CompareTo(filter.RepaymentDate.Value.AddMonths(1)) <= 0);
+                            bondExts = bondsExt.Where(b => b.CommonDate.Value.CompareTo(filter.RepaymentDate.Value.AddMonths(1)) <= 0);
                         }
                     }
                     //TODO: По дате погашения - надо учитывать дату оферты
 
-                    bonds = bonds.OrderByDescending(b => b.MatDate).ThenByDescending(b => b.CouponPercent);
+                    bondExts = bondExts.OrderByDescending(b => b.CommonDate).ThenByDescending(b => b.CouponPercent);
                     break;
                 case BondClass.FarthestRepaynment:
-                    bonds = bonds.OrderByDescending(b => b.MatDate).ThenByDescending(b => b.CouponPercent);
+                    bondExts = bondsExt.OrderByDescending(b => b.CommonDate.Value.Year).ThenByDescending(b => b.CouponPercent);
                     break;
             }
 
-            return await new Selector.Runner(filter, traderRepository).ExecuteAsync(bonds);
+            var count = 30;
+            foreach (var ext in bondExts)
+            {
+                logger.Log(LogLevel.Debug, $"Nm: {ext.ShortName}\tOd: {ext.OfferDate}\tMd: {ext.MatDate}\tCd: {ext.CommonDate}");
+                if (--count == 0) break;
+            }
+            return await new Selector.Runner(filter, traderRepository).ExecuteAsync(bondExts);
         }
 
         /// <summary>

@@ -65,11 +65,6 @@ namespace FinTrader.Pro.DB.Models
         /// Объем выпуска
         /// </summary>
         public long? IssueSize { get; set; }
-
-        /// <summary>
-        /// Дата последних торгов
-        /// </summary>
-        public DateTime? PrevDate { get; set; }
         
         /// <summary>
         /// Наименование бумаги
@@ -80,17 +75,6 @@ namespace FinTrader.Pro.DB.Models
         /// Валюта номинала
         /// </summary>
         public string FaceUnit { get; set; }
-        
-        /// <summary>
-        /// Цена оферты
-        /// </summary>
-        public double? BuyBackPrice { get; set; }
-        
-        /// <summary>
-        /// Дата, к которой рассчитывается доходность
-        /// (если данное поле не заполнено, то "Доходность посл.сделки" рассчитывается к Дате погашения)
-        /// </summary>
-        public DateTime? BuyBackDate { get; set; }
         
         public string Isin { get; set; }
         

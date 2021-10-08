@@ -125,10 +125,13 @@ namespace FinTrader.Pro.Bonds.Selector
                 }
             }
 
-            // Сохраняем на случай, если надо будет собирать второй портфель
-            foreach (var bondIsin in mySet.BondsList.Keys)
+            if (mySet != null)
             {
-                _firstPortfolio.Add(bondIsin);
+                // Сохраняем на случай, если надо будет собирать второй портфель
+                foreach (var bondIsin in mySet.BondsList.Keys)
+                {
+                    _firstPortfolio.Add(bondIsin);
+                }
             }
             
             return mySet;
@@ -237,7 +240,7 @@ namespace FinTrader.Pro.Bonds.Selector
             var coupons = await _traderRepository.Coupons
                 .Where(c => bonds.Keys.Contains(c.Isin) 
                             && c.CouponDate.HasValue 
-                            && c.CouponDate.Value.CompareTo(today) >= 0)
+                            && c.CouponDate.Value >= today)
                 .Select(c => new SelectedCoupon
                 {
                     ShortName = bonds[c.Isin].ShortName,

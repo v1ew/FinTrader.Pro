@@ -1,6 +1,6 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FinTrader.Pro.DB.Migrations
 {
@@ -18,6 +18,7 @@ namespace FinTrader.Pro.DB.Migrations
                     ShortName = table.Column<string>(nullable: true),
                     PrevWaPrice = table.Column<double>(nullable: true),
                     YieldAtPrevWaPrice = table.Column<double>(nullable: true),
+                    NextCoupon = table.Column<DateTime>(nullable: true),
                     CouponValue = table.Column<double>(nullable: true),
                     AccruedInt = table.Column<double>(nullable: true),
                     LotSize = table.Column<int>(nullable: true),
@@ -27,11 +28,8 @@ namespace FinTrader.Pro.DB.Migrations
                     Decimals = table.Column<int>(nullable: true),
                     CouponPeriod = table.Column<int>(nullable: true),
                     IssueSize = table.Column<long>(nullable: true),
-                    PrevDate = table.Column<DateTime>(nullable: true),
                     SecName = table.Column<string>(nullable: true),
                     FaceUnit = table.Column<string>(nullable: true),
-                    BuyBackPrice = table.Column<double>(nullable: true),
-                    BuyBackDate = table.Column<DateTime>(nullable: true),
                     Isin = table.Column<string>(nullable: true),
                     CurrencyId = table.Column<string>(nullable: true),
                     SecType = table.Column<string>(nullable: true),
@@ -67,7 +65,7 @@ namespace FinTrader.Pro.DB.Migrations
                 columns: table => new
                 {
                     CouponId = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Isin = table.Column<string>(nullable: true),
                     CouponDate = table.Column<DateTime>(nullable: true),
                     RecordDate = table.Column<DateTime>(nullable: true),
@@ -89,7 +87,7 @@ namespace FinTrader.Pro.DB.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>

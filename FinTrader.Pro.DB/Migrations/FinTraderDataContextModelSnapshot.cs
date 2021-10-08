@@ -4,7 +4,6 @@ using FinTrader.Pro.DB.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FinTrader.Pro.DB.Migrations
 {
@@ -15,113 +14,103 @@ namespace FinTrader.Pro.DB.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("ProductVersion", "3.1.19")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("FinTrader.Pro.DB.Models.Bond", b =>
                 {
                     b.Property<string>("SecId")
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<double?>("AccruedInt")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<string>("BoardId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("BuyBackDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<double?>("BuyBackPrice")
-                        .HasColumnType("double precision");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<double?>("CouponPercent")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<int?>("CouponPeriod")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<double?>("CouponValue")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<string>("CurrencyId")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int?>("Decimals")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<bool>("Discarded")
-                        .HasColumnType("boolean");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<double?>("Duration")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<int?>("EmitterId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("FaceUnit")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<double?>("FaceValue")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<string>("Isin")
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<long?>("IssueSize")
                         .HasColumnType("bigint");
 
                     b.Property<int?>("LotSize")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<double?>("LotValue")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<DateTime?>("MatDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<double?>("ModifiedDuration")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<DateTime?>("NextCoupon")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("OfferDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("PrevDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<double?>("PrevWaPrice")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<string>("SecName")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("SecType")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("ShortName")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Status")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<double?>("ValueAvg")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<double?>("Yield")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<double?>("YieldAtPrevWaPrice")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.HasKey("SecId");
 
@@ -134,12 +123,12 @@ namespace FinTrader.Pro.DB.Migrations
                 {
                     b.Property<int>("BondsCount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasDefaultValue(6);
 
                     b.Property<int>("MaxYield")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasDefaultValue(15);
 
                     b.ToTable("Config");
@@ -149,38 +138,37 @@ namespace FinTrader.Pro.DB.Migrations
                 {
                     b.Property<int>("CouponId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CouponDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("FaceUnit")
-                        .HasColumnType("text");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<double?>("FaceValue")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<double?>("InitialFaceValue")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<string>("Isin")
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime?>("RecordDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("StartDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<double?>("Value")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<double?>("ValuePrc")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<double?>("ValueRub")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.HasKey("CouponId");
 
@@ -193,11 +181,10 @@ namespace FinTrader.Pro.DB.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 

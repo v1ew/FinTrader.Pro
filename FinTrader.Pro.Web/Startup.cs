@@ -1,6 +1,6 @@
+using System.Data.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -13,12 +13,17 @@ using FinTrader.Pro.Web.Schedule;
 using FluentScheduler;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.Extensions.Configuration;
+using MySqlConnector;
 using Newtonsoft.Json.Converters;
 
 namespace FinTrader.Pro.Web
 {
+    
     public class Startup
     {
+        private const string MySqlServerVersion = "10.6.4";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -34,8 +39,9 @@ namespace FinTrader.Pro.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddDbContext<FinTraderDataContext>(opts => {
-                    opts.UseNpgsql(Configuration["ConnectionStrings:DefaultConnection"]);
+                .AddDbContext<FinTraderDataContext>(opts =>
+                {
+                    opts.UseMySql(new MySqlConnection(Configuration["ConnectionStrings:DefaultConnection"]), ServerVersion.Parse(MySqlServerVersion));
                     // Debug sql queries
                     opts.UseLoggerFactory(MyLoggerFactory);
                 })

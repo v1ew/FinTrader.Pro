@@ -43,7 +43,7 @@ namespace FinTrader.Pro.Web
                 {
                     opts.UseMySql(new MySqlConnection(Configuration["ConnectionStrings:DefaultConnection"]), ServerVersion.Parse(MySqlServerVersion));
                     // Debug sql queries
-                    opts.UseLoggerFactory(MyLoggerFactory);
+                    //opts.UseLoggerFactory(MyLoggerFactory);
                 })
                 .AddScoped<IFinTraderRepository, FinTraderRepository>()
                 .AddIssHttpClient(Configuration)

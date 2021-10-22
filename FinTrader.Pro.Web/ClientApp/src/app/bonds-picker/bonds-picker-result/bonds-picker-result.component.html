@@ -12,3 +12,4 @@
 
 <p *ngIf="portfolios != null && portfolios[0].isError" class="mat-display-1">{{ portfolios[0].errorMessage }}</p>
 
+<button mat-raised-button (click)="backToForm()" type="button">Вернуться</button>

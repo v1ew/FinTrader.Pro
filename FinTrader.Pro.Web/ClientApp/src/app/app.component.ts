@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Repository } from "./models/repository";
+import {Portfolio} from "./models/portfolio.model";
 
 @Component({
   selector: 'app-root',
@@ -7,4 +9,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'FinTraderPro';
+
+  constructor(private readonly repo: Repository) { }
+
+  get formSent(): boolean {
+    return this.repo.formSent;
+  }
+
 }

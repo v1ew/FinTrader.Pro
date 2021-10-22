@@ -6,7 +6,6 @@ import { Portfolio } from './portfolio.model';
 
 @Injectable()
 export class Repository {
-  //filter: BondsPickerFilter;
   private prtfls: Portfolio[] = null;
   private portfolioRequested: boolean = false;
   private filterSent: BondsPickerFilter = null;
@@ -28,6 +27,10 @@ export class Repository {
 
   get formSent(): boolean {
     return this.portfolioRequested;
+  }
+
+  resetRequested() {
+    this.portfolioRequested = false;
   }
 
   get savedFilter(): BondsPickerFilter {

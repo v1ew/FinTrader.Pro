@@ -1,5 +1,4 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
 import { Repository } from "../../models/repository";
 import {Portfolio} from "../../models/portfolio.model";
@@ -11,18 +10,16 @@ import {Portfolio} from "../../models/portfolio.model";
 })
 export class BondsPickerResultComponent implements OnInit {
 
-  constructor(private readonly router: Router, private readonly repo: Repository) {
-  }
+  constructor(private readonly repo: Repository) { }
 
-  // Если форму еще не отправляли, то переадресуем на форму
   ngOnInit(): void {
-    if (!this.repo.formSent) {
-      this.router.navigate(["form"]);
-    }
   }
 
   get portfolios(): Portfolio[] {
     return this.repo.portfolios;
   }
 
+  backToForm() {
+    this.repo.resetRequested();
+  }
 }

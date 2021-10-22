@@ -1,4 +1,4 @@
-﻿import { BondSet } from "./bond-set.model";
+import { BondSet } from "./bond-set.model";
 
 export class Portfolio {
   constructor(

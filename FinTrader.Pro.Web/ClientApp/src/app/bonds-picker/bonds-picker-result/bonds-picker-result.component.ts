@@ -19,7 +19,4 @@ export class BondsPickerResultComponent implements OnInit {
     return this.repo.portfolios;
   }
 
-  backToForm() {
-    this.repo.resetRequested();
-  }
 }

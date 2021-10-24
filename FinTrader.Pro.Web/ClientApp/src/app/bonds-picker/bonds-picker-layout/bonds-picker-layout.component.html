@@ -1,0 +1,4 @@
+  <app-bonds-picker-result *ngIf="formSent"></app-bonds-picker-result>
+  <app-bonds-picker-form *ngIf="!formSent"></app-bonds-picker-form>
+
+  <button mat-raised-button (click)="backToForm()" type="button" *ngIf="formSent">Вернуться</button>

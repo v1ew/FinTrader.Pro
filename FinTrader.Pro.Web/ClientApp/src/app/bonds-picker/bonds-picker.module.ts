@@ -20,12 +20,14 @@ import { Repository } from '../models/repository';
 import { BondsPickerFormComponent } from './bonds-picker-form/bonds-picker-form.component';
 import { BondsPickerResultComponent } from './bonds-picker-result/bonds-picker-result.component';
 import { PortfolioTabsComponent } from './portfolio-tabs/portfolio-tabs.component';
+import { BondsPickerLayoutComponent } from './bonds-picker-layout/bonds-picker-layout.component';
 
 @NgModule({
   declarations: [
     BondsPickerFormComponent,
     BondsPickerResultComponent,
     PortfolioTabsComponent,
+    BondsPickerLayoutComponent,
   ],
   providers: [
     Repository
@@ -49,8 +51,6 @@ import { PortfolioTabsComponent } from './portfolio-tabs/portfolio-tabs.componen
     MatTabsModule,
   ],
   exports: [
-    BondsPickerFormComponent,
-    BondsPickerResultComponent,
-  ]
+    BondsPickerLayoutComponent  ]
 })
 export class BondsPickerModule { }

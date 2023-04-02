@@ -15,7 +15,7 @@ export class Repository {
   }
 
   getBondSet(filter: BondsPickerFilter) {
-    this.http.post<Portfolio[]>("/api/bondsets", filter)
+    this.http.post<Portfolio[]>("https://ofz.fintrader.pro/api/bondsets", filter)
       .subscribe(p => this.prtfls = p);
     this.portfolioRequested = true;
     this.filterSent = filter;
